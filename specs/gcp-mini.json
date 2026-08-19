@@ -1,0 +1,137 @@
+{
+  "title": "Google Cloud, the short version",
+  "out": "boards/gcp-mini.excalidraw",
+  "panel_w": 1500,
+  "panel_h": 820,
+  "gap": 300,
+  "panels": [
+    {
+      "head": "Four tiers",
+      "layout": "layers",
+      "item_size": 46,
+      "caption": "A trimmed example showing the layers layout with GCP icons. The official architecture icon set has 139 named services.",
+      "side": "read top to bottom",
+      "bands": [
+        {
+          "label": "Edge",
+          "wash": "sky",
+          "items": [
+            {
+              "icon": [
+                "gcp",
+                "Cloud DNS"
+              ],
+              "label": "Cloud DNS"
+            },
+            {
+              "icon": [
+                "gcp",
+                "Cloud CDN"
+              ],
+              "label": "Cloud CDN"
+            }
+          ]
+        },
+        {
+          "label": "Entry",
+          "wash": "mint",
+          "items": [
+            {
+              "icon": [
+                "gcp",
+                "Cloud Load Balancing"
+              ],
+              "label": "Load Balancing"
+            }
+          ]
+        },
+        {
+          "label": "Compute",
+          "wash": "lemon",
+          "items": [
+            {
+              "icon": [
+                "gcp",
+                "Compute Engine"
+              ],
+              "label": "Compute Engine"
+            },
+            {
+              "icon": [
+                "gcp",
+                "Cloud Run"
+              ],
+              "label": "Cloud Run"
+            }
+          ]
+        },
+        {
+          "label": "Data",
+          "wash": "lilac",
+          "items": [
+            {
+              "icon": [
+                "gcp",
+                "Cloud Storage"
+              ],
+              "label": "Cloud Storage"
+            },
+            {
+              "icon": [
+                "gcp",
+                "Cloud SQL"
+              ],
+              "label": "Cloud SQL"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "head": "Compute, four ways",
+      "layout": "grid",
+      "cols": 4,
+      "item_size": 92,
+      "caption": "The grid layout with notes.",
+      "items": [
+        {
+          "icon": [
+            "gcp",
+            "Compute Engine"
+          ],
+          "label": "Compute Engine",
+          "wash": "lemon",
+          "note": "Virtual machines, billed per second."
+        },
+        {
+          "icon": [
+            "gcp",
+            "GKE"
+          ],
+          "marker": "GKE",
+          "tint": "mint",
+          "full": "Google Kubernetes Engine",
+          "note": "Managed Kubernetes."
+        },
+        {
+          "icon": [
+            "gcp",
+            "Cloud Run"
+          ],
+          "label": "Cloud Run",
+          "wash": "sky",
+          "note": "Any container, scales to zero."
+        },
+        {
+          "icon": [
+            "gcp",
+            "Cloud Functions"
+          ],
+          "label": "Cloud Functions",
+          "wash": "lilac",
+          "note": "A single event-driven function."
+        }
+      ]
+    }
+  ]
+}

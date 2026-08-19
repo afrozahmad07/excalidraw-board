@@ -402,6 +402,23 @@ def grid(b, x, y, w, h, panel):
              for r in range(nrows)]
     spacing = 54
     total = sum(row_h) + spacing * (nrows - 1)
+
+    # Auto-fit: if the measured rows do not fit the panel, close the gaps first,
+    # then shrink the icons. Better than silently overflowing, and better than
+    # making the spec author guess a panel height.
+    avail = h - 120 - (MARGIN + 40)
+    if total > avail and nrows > 1:
+        spacing = max(16, spacing - (total - avail) / (nrows - 1))
+        total = sum(row_h) + spacing * (nrows - 1)
+    if total > avail:
+        k = max(0.55, avail / total)
+        iw *= k
+        note_w = col_w * 0.86
+        row_h = [max(item_height(it, iw, note_w)
+                     for it in items[r * cols:(r + 1) * cols])
+                 for r in range(nrows)]
+        total = sum(row_h) + spacing * (nrows - 1)
+
     top0 = y + max(MARGIN + 40, (h - 120 - total) / 2)
 
     pos = []

@@ -24,6 +24,7 @@ import sys
 sys.path.insert(0, str(pathlib.Path(__file__).parent))
 from excalidraw_kit import Board, txt, rect, arrow, measure   # noqa: E402
 import scene                                                  # noqa: E402
+import library as lib                                         # noqa: E402
 
 CREAM = "#fdf6e3"
 TITLE_C = "#e8590c"
@@ -69,6 +70,101 @@ def check_collisions(elements, name):
                     print(f"    OVERLAP {name}: {a.get('text','')[:22]!r} "
                           f"over {c.get('text','')[:22]!r}")
     return hits
+
+
+# --------------------------------------------------------------- validation
+
+REQUIRED = {"flow": ("nodes",), "layers": ("bands",), "hub": ("centre", "items"),
+            "row": ("items",), "grid": ("items",), "pair": ("left", "right"),
+            "stack": ("rows",)}
+
+
+def validate(spec):
+    """Fail with a sentence a person can act on, before anything is drawn.
+
+    A bad spec used to surface as a KeyError or a stack trace from deep inside
+    a layout, which tells you nothing about which panel is wrong.
+    """
+    errs = []
+    if "out" not in spec:
+        errs.append('spec is missing "out" — where to write the .excalidraw file')
+    panels = spec.get("panels")
+    if not panels:
+        errs.append('spec is missing "panels", or it is empty')
+        return errs
+
+    for i, p in enumerate(panels):
+        where = f'panel {i + 1} ({p.get("head", "untitled")!r})'
+        for key in ("head", "caption"):
+            if key not in p:
+                errs.append(f'{where}: missing "{key}"')
+        layout = p.get("layout")
+        if layout is None:
+            errs.append(f'{where}: missing "layout" — one of {", ".join(sorted(scene.LAYOUTS))}')
+            continue
+        if layout not in scene.LAYOUTS:
+            errs.append(f'{where}: unknown layout {layout!r}. '
+                        f'Available: {", ".join(sorted(scene.LAYOUTS))}')
+            continue
+        for key in REQUIRED[layout]:
+            if key not in p:
+                errs.append(f'{where}: layout "{layout}" needs "{key}"')
+
+        items = list(p.get("items", []))
+        for band in p.get("bands", []):
+            items += band.get("items", [])
+        for k in ("centre", "left", "right", "gate", "source", "aside"):
+            if isinstance(p.get(k), dict):
+                items.append(p[k])
+        for it in items:
+            errs += validate_item(it, where)
+
+        if layout == "flow":
+            ids = {n.get("id") for n in p.get("nodes", [])}
+            for n in p.get("nodes", []):
+                if not n.get("id"):
+                    errs.append(f'{where}: every flow node needs an "id"')
+                if not n.get("label"):
+                    errs.append(f'{where}: flow node {n.get("id")!r} needs a "label"')
+            for e in p.get("edges", []):
+                for end in e[:2]:
+                    if end not in ids:
+                        errs.append(f'{where}: edge points at unknown node {end!r}. '
+                                    f'Known ids: {", ".join(sorted(x for x in ids if x))}')
+    return errs
+
+
+def validate_item(it, where):
+    errs = []
+    if "shape" in it:
+        if it["shape"] not in scene.SHAPES:
+            errs.append(f'{where}: unknown shape {it["shape"]!r}. '
+                        f'Available: {", ".join(sorted(scene.SHAPES))}')
+    elif "icon" in it:
+        ref = it["icon"]
+        if not (isinstance(ref, (list, tuple)) and len(ref) == 2):
+            errs.append(f'{where}: "icon" must be [library, item-name], got {ref!r}')
+        else:
+            src = scene.LIBS.get(ref[0], ref[0])
+            if "/" not in src:
+                errs.append(f'{where}: unknown library {ref[0]!r}. '
+                            f'Shorthands: {", ".join(sorted(scene.LIBS))} — or pass '
+                            f'a full owner/name.excalidrawlib')
+            else:
+                try:
+                    if not lib.find_item(src, ref[1]):
+                        names = [x["name"] for x in lib.load(src)][:8]
+                        errs.append(f'{where}: {ref[1]!r} not found in {ref[0]}. '
+                                    f'First few available: {", ".join(names)}')
+                except Exception as exc:
+                    errs.append(f'{where}: could not read library {ref[0]!r} ({exc})')
+    else:
+        errs.append(f'{where}: item has neither "shape" nor "icon": {it!r}')
+    wash = it.get("wash") or it.get("tint")
+    if wash and wash not in scene.PALETTE and not str(wash).startswith("#"):
+        errs.append(f'{where}: unknown colour {wash!r}. '
+                    f'Use one of {", ".join(sorted(scene.PALETTE))} or a #hex')
+    return errs
 
 
 def build(spec):
@@ -119,7 +215,19 @@ def build(spec):
 def main():
     if len(sys.argv) < 2:
         sys.exit(__doc__)
-    spec = json.loads(pathlib.Path(sys.argv[1]).read_text())
+    spec_path = pathlib.Path(sys.argv[1])
+    try:
+        spec = json.loads(spec_path.read_text())
+    except json.JSONDecodeError as exc:
+        sys.exit(f"{spec_path.name} is not valid JSON: line {exc.lineno}, {exc.msg}")
+
+    errs = validate(spec)
+    if errs:
+        print(f"{spec_path.name} has {len(errs)} problem(s):\n")
+        for e in errs:
+            print(f"  - {e}")
+        sys.exit(1)
+
     b, problems = build(spec)
     out = pathlib.Path(spec["out"])
     if not out.is_absolute():

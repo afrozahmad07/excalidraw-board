@@ -7,7 +7,7 @@ libraries.
 No image model. No API key. No cost. The output is a real `.excalidraw` file, so
 every box, arrow and label is still yours to drag around after import.
 
-![AWS services board](examples/aws-main-services.png)
+![Every layout](examples/layouts-tour.png)
 
 ## Why this exists
 
@@ -43,7 +43,7 @@ python3 -m pip install playwright && python3 -m playwright install chromium
 ## Use it directly
 
 ```bash
-python3 scripts/build.py specs/flow-demo.json
+python3 scripts/build.py specs/layouts-tour.json
 ```
 
 Lands in `boards/` where you ran it.
@@ -86,13 +86,21 @@ Full reference in [SKILL.md](SKILL.md).
 
 ## Examples
 
-Every one of these was built from the spec beside it, with no images generated.
+Each was built from the spec beside it. No images generated, nothing paid for.
 
-| Board | Spec |
-|---|---|
-| ![Tailscale ACLs](examples/tailscale-acls.png) | [`specs/tailscale-acls.json`](specs/tailscale-acls.json) |
-| ![GCP services](examples/gcp-main-services.png) | [`specs/gcp-services.json`](specs/gcp-services.json) |
-| ![Request path](examples/flow-demo.png) | [`specs/flow-demo.json`](specs/flow-demo.json) |
+**Every layout, one panel each** — the picture at the top of this page.
+[`specs/layouts-tour.json`](specs/layouts-tour.json)
+
+**A request, end to end** — the `flow` layout on its own.
+[`specs/flow-demo.json`](specs/flow-demo.json)
+
+![Request path](examples/flow-demo.png)
+
+**Cloud icons** — short AWS and GCP boards showing `layers` and `grid` with
+vendor icon sets. [`specs/aws-mini.json`](specs/aws-mini.json) ·
+[`specs/gcp-mini.json`](specs/gcp-mini.json)
+
+![AWS mini](examples/aws-mini.png)
 
 ## Icons
 

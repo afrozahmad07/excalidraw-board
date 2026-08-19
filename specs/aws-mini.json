@@ -1,0 +1,142 @@
+{
+  "title": "AWS, the short version",
+  "out": "boards/aws-mini.excalidraw",
+  "panel_w": 1500,
+  "panel_h": 820,
+  "gap": 300,
+  "panels": [
+    {
+      "head": "Four tiers",
+      "layout": "layers",
+      "item_size": 46,
+      "caption": "A trimmed example showing the layers layout with AWS icons. The community catalogue has 249 named AWS services if you want the full picture.",
+      "side": "read top to bottom",
+      "bands": [
+        {
+          "label": "Edge",
+          "wash": "sky",
+          "items": [
+            {
+              "icon": [
+                "aws",
+                "Route 53"
+              ],
+              "label": "Route 53"
+            },
+            {
+              "icon": [
+                "aws",
+                "CloudFront"
+              ],
+              "label": "CloudFront"
+            }
+          ]
+        },
+        {
+          "label": "Entry",
+          "wash": "mint",
+          "items": [
+            {
+              "icon": [
+                "aws",
+                "ELB"
+              ],
+              "label": "ELB",
+              "full": "Elastic Load Balancing"
+            }
+          ]
+        },
+        {
+          "label": "Compute",
+          "wash": "lemon",
+          "items": [
+            {
+              "icon": [
+                "aws",
+                "EC2"
+              ],
+              "label": "EC2",
+              "full": "Elastic Compute Cloud"
+            },
+            {
+              "icon": [
+                "aws",
+                "Lambda"
+              ],
+              "label": "Lambda"
+            }
+          ]
+        },
+        {
+          "label": "Data",
+          "wash": "lilac",
+          "items": [
+            {
+              "icon": [
+                "aws",
+                "S3"
+              ],
+              "label": "S3",
+              "full": "Simple Storage Service"
+            },
+            {
+              "icon": [
+                "aws",
+                "RDS"
+              ],
+              "label": "RDS",
+              "full": "Relational Database Service"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "head": "Compute, four ways",
+      "layout": "grid",
+      "cols": 4,
+      "item_size": 92,
+      "caption": "The grid layout with notes and acronym expansions.",
+      "items": [
+        {
+          "icon": [
+            "aws",
+            "EC2"
+          ],
+          "label": "EC2",
+          "wash": "lemon",
+          "full": "Elastic Compute Cloud",
+          "note": "A whole virtual machine you administer."
+        },
+        {
+          "icon": [
+            "aws",
+            "Lambda"
+          ],
+          "marker": "Lambda",
+          "tint": "lemon",
+          "note": "One function, triggered by an event."
+        },
+        {
+          "icon": [
+            "aws",
+            "ECS"
+          ],
+          "label": "ECS",
+          "wash": "mint",
+          "full": "Elastic Container Service",
+          "note": "Containers on AWS's own scheduler."
+        },
+        {
+          "icon": [
+            "aws",
+            "Fargate"
+          ],
+          "label": "Fargate",
+          "wash": "sky",
+          "note": "Containers with no machine to size."
+        }
+      ]
+    }
+  ]
+}

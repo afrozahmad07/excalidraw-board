@@ -1,0 +1,342 @@
+{
+  "title": "Every layout, one panel each",
+  "out": "boards/layouts-tour.excalidraw",
+  "panel_w": 1400,
+  "panel_h": 820,
+  "gap": 300,
+  "panels": [
+    {
+      "head": "flow \u2014 boxes and arrows",
+      "layout": "flow",
+      "caption": "A plain structural diagram. Nodes sit on a col/row grid, edges route between them. Use it for architecture, sequences and pipelines.",
+      "nodes": [
+        {
+          "id": "a",
+          "label": "Browser",
+          "col": 0,
+          "row": 0,
+          "wash": "sky"
+        },
+        {
+          "id": "b",
+          "label": "Web server",
+          "col": 1,
+          "row": 0,
+          "wash": "mint",
+          "note": "stateless"
+        },
+        {
+          "id": "c",
+          "label": "Worker",
+          "col": 2,
+          "row": 1,
+          "wash": "lemon"
+        },
+        {
+          "id": "d",
+          "label": "Database",
+          "col": 2,
+          "row": 0,
+          "wash": "rose"
+        }
+      ],
+      "edges": [
+        [
+          "a",
+          "b",
+          "request"
+        ],
+        [
+          "b",
+          "d",
+          "query"
+        ],
+        [
+          "b",
+          "c",
+          "enqueue"
+        ]
+      ]
+    },
+    {
+      "head": "layers \u2014 stacked tiers",
+      "layout": "layers",
+      "item_size": 52,
+      "caption": "Tiers of a system, with the things that live at each. Use it when the point is which component belongs where.",
+      "side": "read top to bottom",
+      "bands": [
+        {
+          "label": "Front",
+          "note": "what users reach",
+          "wash": "sky",
+          "items": [
+            {
+              "icon": [
+                "net",
+                "Computer (3D)"
+              ],
+              "label": "desktop"
+            },
+            {
+              "icon": [
+                "net",
+                "Client"
+              ],
+              "label": "client"
+            }
+          ]
+        },
+        {
+          "label": "Middle",
+          "note": "where logic runs",
+          "wash": "mint",
+          "items": [
+            {
+              "icon": [
+                "net",
+                "Server"
+              ],
+              "label": "app server"
+            },
+            {
+              "icon": [
+                "net",
+                "Switch"
+              ],
+              "label": "switch"
+            }
+          ]
+        },
+        {
+          "label": "Back",
+          "note": "where state lives",
+          "wash": "lilac",
+          "items": [
+            {
+              "icon": [
+                "net",
+                "Server"
+              ],
+              "label": "database"
+            },
+            {
+              "icon": [
+                "net",
+                "Firewall"
+              ],
+              "label": "firewall"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "head": "hub \u2014 one thing at the centre",
+      "layout": "hub",
+      "item_size": 130,
+      "caption": "A single source everything else depends on. Arrows point inward.",
+      "centre": {
+        "shape": "doc",
+        "marker": "one config file",
+        "tint": "sky",
+        "size": 160
+      },
+      "items": [
+        {
+          "icon": [
+            "net",
+            "Computer (3D)"
+          ],
+          "label": "desktop",
+          "wash": "mint"
+        },
+        {
+          "icon": [
+            "net",
+            "Server"
+          ],
+          "label": "server",
+          "wash": "peach"
+        },
+        {
+          "icon": [
+            "net",
+            "Router"
+          ],
+          "label": "router",
+          "wash": "lilac"
+        },
+        {
+          "icon": [
+            "net",
+            "Switch"
+          ],
+          "label": "switch",
+          "wash": "sky"
+        }
+      ],
+      "footnote": "one file, every device"
+    },
+    {
+      "head": "row \u2014 a source feeding several things",
+      "layout": "row",
+      "item_size": 100,
+      "caption": "One origin at the top, several consumers beneath, each behind an optional gate.",
+      "source": {
+        "shape": "cloud",
+        "label": "control plane",
+        "wash": "mint",
+        "size": 320
+      },
+      "items": [
+        {
+          "icon": [
+            "net",
+            "Computer (3D)"
+          ],
+          "label": "desktop",
+          "wash": "mint"
+        },
+        {
+          "icon": [
+            "net",
+            "Server"
+          ],
+          "label": "server",
+          "wash": "lilac"
+        },
+        {
+          "icon": [
+            "net",
+            "Switch"
+          ],
+          "label": "switch",
+          "wash": "sky"
+        }
+      ],
+      "gate": {
+        "icon": [
+          "net",
+          "Firewall"
+        ],
+        "size": 60
+      },
+      "marker": "local filter",
+      "tint": "peach"
+    },
+    {
+      "head": "grid \u2014 a family of related things",
+      "layout": "grid",
+      "cols": 3,
+      "item_size": 110,
+      "caption": "Items that belong together, lightly connected. Add a note to each for a sentence of detail.",
+      "items": [
+        {
+          "icon": [
+            "net",
+            "Server"
+          ],
+          "label": "server",
+          "wash": "mint",
+          "note": "Runs your code."
+        },
+        {
+          "icon": [
+            "net",
+            "Router"
+          ],
+          "label": "router",
+          "wash": "lilac",
+          "note": "Moves packets between networks."
+        },
+        {
+          "icon": [
+            "net",
+            "Switch"
+          ],
+          "label": "switch",
+          "wash": "sky",
+          "note": "Connects machines on one network."
+        },
+        {
+          "icon": [
+            "net",
+            "Firewall"
+          ],
+          "marker": "firewall",
+          "tint": "rose",
+          "note": "Decides what may cross."
+        },
+        {
+          "icon": [
+            "net",
+            "Hub"
+          ],
+          "label": "hub",
+          "wash": "peach",
+          "note": "Repeats every frame to every port."
+        },
+        {
+          "icon": [
+            "net",
+            "VPN"
+          ],
+          "label": "VPN",
+          "wash": "lemon",
+          "note": "An encrypted tunnel across untrusted links."
+        }
+      ]
+    },
+    {
+      "head": "pair \u2014 this, then that",
+      "layout": "pair",
+      "caption": "Two things and the relationship between them. Set blocked to true and the arrow stops short.",
+      "left": {
+        "shape": "clipboard",
+        "label": "checks",
+        "wash": "mint",
+        "size": 240
+      },
+      "right": {
+        "shape": "door",
+        "marker": "release",
+        "tint": "rose",
+        "size": 190
+      },
+      "blocked": true,
+      "footnote": "a failing check never reaches the door"
+    },
+    {
+      "head": "stack \u2014 anatomy of one thing",
+      "layout": "stack",
+      "caption": "A card of labelled rows. Use it to take one object apart.",
+      "rows": [
+        {
+          "label": "header",
+          "wash": "mint",
+          "marker": "metadata",
+          "tint": "mint"
+        },
+        {
+          "label": "body",
+          "wash": "lilac"
+        },
+        {
+          "label": "footer",
+          "wash": "sky"
+        }
+      ],
+      "flow": [
+        0,
+        2
+      ],
+      "aside": {
+        "shape": "padlock",
+        "label": "signature",
+        "wash": "mint",
+        "size": 96
+      },
+      "footnote": "three parts, one message"
+    }
+  ]
+}
