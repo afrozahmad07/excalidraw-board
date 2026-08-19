@@ -129,10 +129,3 @@ a seven-panel board hides everything.
   that the import is silently dropped.
 - **Two library formats exist** (v1 `library`, v2 `libraryItems`). `load()`
   handles both.
-
-## Credit
-
-The multi-panel format — title above, illustration, description below, arrows
-between, read left to right — is Mark Kashef's method, demonstrated in his
-Excalidraw Loom. This is the free, fully-native take on it: no image model, no
-API key, and the diagram stays editable.

@@ -109,17 +109,6 @@ One rule saves most of the trouble: **if a library's items come back as
 `item-0 … item-N`, skip it.** About half the catalogue uses the older format
 with unnamed items, and identifying those means rendering each one by hand.
 
-## Credit
-
-The multi-panel format — title above, illustration, description below, arrows
-between, read left to right — is **Mark Kashef's** method, demonstrated in his
-Excalidraw Loom walkthrough. His version generates the illustrations with an
-image model and embeds them in the file.
-
-This is the free, fully-native take on the same idea: community icons instead of
-generated art, so there is no API key and nothing to pay, and the whole diagram
-stays editable rather than being a picture sitting on a canvas.
-
 ## Licence
 
 MIT. See [LICENSE](LICENSE).
