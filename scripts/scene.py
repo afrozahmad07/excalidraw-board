@@ -33,9 +33,11 @@ FULL_SIZE = 15
 FULL_SIZE_BAND = 12
 PANEL_BG = "#fffdf6"
 
+# Every wash is checked for contrast against the cream ground. "lemon"
+# (#fff3bf) used to be here and scored 1.03 — invisible on cream.
 PALETTE = {
     "mint": "#c3fae8", "lilac": "#e9d8fd", "sky": "#d0ebff",
-    "peach": "#ffd8a8", "rose": "#ffc9c9", "lemon": "#fff3bf",
+    "peach": "#ffd8a8", "rose": "#ffc9c9", "sage": "#b2f2bb",
     "none": "transparent",
 }
 

@@ -30,7 +30,7 @@
           "label": "Worker",
           "col": 2,
           "row": 1,
-          "wash": "lemon"
+          "wash": "sage"
         },
         {
           "id": "d",
@@ -282,7 +282,7 @@
             "VPN"
           ],
           "label": "VPN",
-          "wash": "lemon",
+          "wash": "sage",
           "note": "An encrypted tunnel across untrusted links."
         }
       ]

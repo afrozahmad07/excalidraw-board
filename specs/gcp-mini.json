@@ -47,7 +47,7 @@
         },
         {
           "label": "Compute",
-          "wash": "lemon",
+          "wash": "sage",
           "items": [
             {
               "icon": [
@@ -100,7 +100,7 @@
             "Compute Engine"
           ],
           "label": "Compute Engine",
-          "wash": "lemon",
+          "wash": "sage",
           "note": "Virtual machines, billed per second."
         },
         {

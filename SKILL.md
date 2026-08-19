@@ -82,7 +82,7 @@ Either a **shape** drawn from primitives, or an **icon** stamped from a library:
   thing in the panel the reader must not miss
 - `full` — what an acronym stands for, in rust beneath the label
 - `note` — a sentence of detail, muted and wrapped
-- `wash` — pastel blob behind the icon: `mint` `lilac` `sky` `peach` `rose` `lemon`
+- `wash` — pastel blob behind the icon: `mint` `lilac` `sky` `peach` `rose` `sage`
 
 Shapes: `doc` `padlock` `tag` `clipboard` `door` `cloud` `ring` `range`.
 

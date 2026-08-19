@@ -30,7 +30,7 @@
           "label": "Lead",
           "col": 2,
           "row": 0,
-          "wash": "lemon",
+          "wash": "sage",
           "note": "email captured"
         },
         {
@@ -101,7 +101,7 @@
             "Stick man"
           ],
           "label": "Founder",
-          "wash": "lemon",
+          "wash": "sage",
           "note": "Owns the offer and the pricing."
         },
         {
