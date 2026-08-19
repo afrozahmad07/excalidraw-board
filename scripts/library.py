@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Use excalidraw.com's community libraries instead of paying for generated art.
 
+    python3 library.py find server           # which icon can I use for X
     python3 library.py search network        # find libraries by keyword
     python3 library.py items <source>        # list the items inside one
     python3 library.py fetch <source>        # cache it locally
@@ -89,6 +90,51 @@ def find_item(source, name_substring):
     return None
 
 
+# Libraries worth sweeping by default: every one of these has *named* items, so
+# a search can actually tell you what it found.
+SEARCHABLE = [
+    "childishgirl/aws-architecture-icons.excalidrawlib",
+    "mguidoti/original-google-architecture-icons.excalidrawlib",
+    "youritjang/azure-cloud-services.excalidrawlib",
+    "rockssk/microsoft-azure-cloud-icons.excalidrawlib",
+    "7demonsrising/azure-compute.excalidrawlib",
+    "7demonsrising/azure-network.excalidrawlib",
+    "7demonsrising/azure-storage.excalidrawlib",
+    "7demonsrising/azure-general.excalidrawlib",
+    "7demonsrising/azure-containers.excalidrawlib",
+    "ubigene/misc-azure-icons.excalidrawlib",
+    "dwelle/network-topology-icons.excalidrawlib",
+    "samu_x86/network-elements.excalidrawlib",
+    "pclainchard/it-logos.excalidrawlib",
+    "esteevens/logos.excalidrawlib",
+    "dhtoran/stick-people.excalidrawlib",
+    "youritjang/stick-figures.excalidrawlib",
+    "m47812/office-items.excalidrawlib",
+    "jgodoy/organization-chart.excalidrawlib",
+    "rochacbruno/computer-parts.excalidrawlib",
+]
+
+
+def find_icon(term, sources=None, limit=40):
+    """Search ITEM names across libraries — 'what icon can I use for X'.
+
+    `search()` matches library titles; this matches the icons inside them,
+    which is the question you actually have when writing a spec.
+    """
+    q = term.lower()
+    hits = []
+    for src in (sources or SEARCHABLE):
+        try:
+            for it in load(src):
+                if q in it["name"].lower():
+                    hits.append((src, it["name"], len(it["elements"])))
+                    if len(hits) >= limit:
+                        return hits
+        except Exception:
+            continue
+    return hits
+
+
 def bbox(elements):
     xs = [e["x"] for e in elements]
     ys = [e["y"] for e in elements]
@@ -149,6 +195,17 @@ def _cli():
     if cmd == "search":
         for l in search(sys.argv[2]):
             print(f"{l['name']:42} {l['source']}")
+    elif cmd == "find":
+        hits = find_icon(sys.argv[2])
+        if not hits:
+            print(f"no icon named like {sys.argv[2]!r}. Try a broader word, or "
+                  f"'search' to look for a whole library.")
+        for src, name, n in hits:
+            short = next((k for k, v in
+                          {"aws": "childishgirl/aws-architecture-icons.excalidrawlib"}.items()
+                          if v == src), None)
+            print(f"{name:34} {src.split('/')[1].replace('.excalidrawlib',''):32} "
+                  f"{n:3} els")
     elif cmd == "items":
         for it in load(sys.argv[2]):
             print(f"{len(it['elements']):4} els  {it['name']}")

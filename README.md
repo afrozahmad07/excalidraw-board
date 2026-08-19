@@ -22,6 +22,31 @@ you drew yourself.
 It rebuilds identically every run, so a board is source you can version rather
 than an artefact you regenerate and hope.
 
+## What it does
+
+- **Researches the topic first.** For anything factual it checks current
+  sources before drawing, instead of writing the diagram from memory.
+- **Finds icons for your subject.** `library.py find <word>` searches icon
+  names across every usable community library at once, so you see what exists
+  before designing the panels.
+- **Seven layouts**, so you describe the shape of the idea rather than placing
+  boxes: `flow`, `layers`, `hub`, `row`, `grid`, `pair`, `stack`.
+- **No coordinates in the spec.** Columns, rows, gaps and wrapping are all
+  measured from the content.
+- **Auto-fits.** Rows that do not fit close their gaps and then shrink, long
+  labels and notes wrap to their column, and boxes grow to hold their text.
+- **Checks its own work.** The build fails if any element falls outside its
+  panel, or if two pieces of lettering overlap. Both are invisible when you
+  look at a whole board zoomed out.
+- **Validates the spec first**, with errors you can act on — an unknown layout
+  lists the real ones, a missing icon names some that do exist, a bad arrow
+  says which node id is wrong.
+- **Strips icons that carry their own captions**, so your label is the only one
+  on the board.
+- **Acronym expansions** in a second colour beneath the label, when you want
+  them.
+- **PNG export and a shareable link.** Both optional.
+
 ## Install
 
 ```bash
@@ -91,6 +116,12 @@ Each was built from the spec beside it. No images generated, nothing paid for.
 **Every layout, one panel each** — the picture at the top of this page.
 [`specs/layouts-tour.json`](specs/layouts-tour.json)
 
+**A business process** — a funnel, who owns what, and where a deal stalls.
+Built from shapes and people, with no product icons anywhere.
+[`specs/business-demo.json`](specs/business-demo.json)
+
+![Business process](examples/business-demo.png)
+
 **A request, end to end** — the `flow` layout on its own.
 [`specs/flow-demo.json`](specs/flow-demo.json)
 
@@ -109,9 +140,19 @@ libraries](https://github.com/excalidraw/excalidraw-libraries), cached locally o
 first use.
 
 ```bash
-python3 scripts/library.py search network
-python3 scripts/library.py items dwelle/network-topology-icons.excalidrawlib
+python3 scripts/library.py find database    # which icon can I use for X
+python3 scripts/library.py search network   # find a whole library
+python3 scripts/library.py items <library>  # list what is inside one
 ```
+
+Registered shorthands cover AWS (249 named icons), Google Cloud (139), Azure
+(spread over six libraries), network topology, IT and technology logos, stick
+people and figures, office items, org charts and computer parts. Any other
+library works too — pass its full `owner/name.excalidrawlib`.
+
+Business and process diagrams usually need none of them. Boxes, arrows, people
+and documents carry a funnel, an org chart or an approval flow, and those are
+built in — see the business example above.
 
 One rule saves most of the trouble: **if a library's items come back as
 `item-0 … item-N`, skip it.** About half the catalogue uses the older format

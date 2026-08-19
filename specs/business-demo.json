@@ -1,0 +1,170 @@
+{
+  "title": "A business process, no vendor icons",
+  "out": "boards/business-demo.excalidraw",
+  "panel_w": 1500,
+  "panel_h": 820,
+  "gap": 300,
+  "panels": [
+    {
+      "head": "Lead to paid customer",
+      "layout": "flow",
+      "caption": "Most business diagrams need boxes, arrows and labels rather than product icons. The flow layout does that, and colour marks the stage.",
+      "nodes": [
+        {
+          "id": "ad",
+          "label": "Ad",
+          "col": 0,
+          "row": 0,
+          "wash": "sky",
+          "note": "cold traffic"
+        },
+        {
+          "id": "lp",
+          "label": "Landing page",
+          "col": 1,
+          "row": 0,
+          "wash": "sky"
+        },
+        {
+          "id": "lead",
+          "label": "Lead",
+          "col": 2,
+          "row": 0,
+          "wash": "lemon",
+          "note": "email captured"
+        },
+        {
+          "id": "call",
+          "label": "Sales call",
+          "col": 3,
+          "row": 0,
+          "wash": "peach"
+        },
+        {
+          "id": "cust",
+          "label": "Customer",
+          "col": 4,
+          "row": 0,
+          "wash": "mint",
+          "note": "paid"
+        },
+        {
+          "id": "nurt",
+          "label": "Nurture",
+          "col": 2,
+          "row": 1,
+          "wash": "lilac",
+          "note": "not ready yet"
+        }
+      ],
+      "edges": [
+        [
+          "ad",
+          "lp"
+        ],
+        [
+          "lp",
+          "lead",
+          "signs up"
+        ],
+        [
+          "lead",
+          "call",
+          "books"
+        ],
+        [
+          "call",
+          "cust",
+          "closes"
+        ],
+        [
+          "lead",
+          "nurt"
+        ],
+        [
+          "nurt",
+          "call",
+          "later"
+        ]
+      ]
+    },
+    {
+      "head": "Who owns what",
+      "layout": "grid",
+      "cols": 3,
+      "item_size": 100,
+      "caption": "People and roles from the stick-figure and org-chart libraries. No product logos anywhere.",
+      "items": [
+        {
+          "icon": [
+            "figures",
+            "Stick man"
+          ],
+          "label": "Founder",
+          "wash": "lemon",
+          "note": "Owns the offer and the pricing."
+        },
+        {
+          "icon": [
+            "figures",
+            "Girl"
+          ],
+          "marker": "Marketing",
+          "tint": "sky",
+          "note": "Owns everything before the lead exists."
+        },
+        {
+          "icon": [
+            "figures",
+            "Guy"
+          ],
+          "label": "Sales",
+          "wash": "peach",
+          "note": "Owns the call and the close."
+        },
+        {
+          "icon": [
+            "orgchart",
+            "Position"
+          ],
+          "label": "Delivery",
+          "wash": "mint",
+          "note": "Owns what happens after the money."
+        },
+        {
+          "icon": [
+            "office",
+            "Folder"
+          ],
+          "label": "Ops",
+          "wash": "lilac",
+          "note": "Owns the paperwork nobody wants."
+        },
+        {
+          "shape": "padlock",
+          "label": "Finance",
+          "wash": "rose",
+          "note": "Owns invoices, chasing and the bank."
+        }
+      ]
+    },
+    {
+      "head": "Where a deal stalls",
+      "layout": "pair",
+      "caption": "The pair layout with blocked set to true \u2014 the arrow stops short of the thing it cannot reach.",
+      "left": {
+        "shape": "clipboard",
+        "size": 240,
+        "label": "proposal sent"
+      },
+      "right": {
+        "shape": "door",
+        "size": 190,
+        "marker": "no decision",
+        "tint": "rose"
+      },
+      "blocked": true,
+      "footnote": "most lost deals die here, not at the price"
+    }
+  ]
+}

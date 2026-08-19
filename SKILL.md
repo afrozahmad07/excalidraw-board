@@ -11,6 +11,28 @@ nothing, stays fully editable after import, and renders identically every run.
 
 You write a spec. You never write coordinates.
 
+## Step 0 — research the topic, then find the icons
+
+Two things before writing any spec.
+
+**Get the facts right.** If the board explains something factual — a service, a
+protocol, a process — check current sources first rather than writing from
+memory. Boards get shared and screenshotted; a wrong claim outlives the diagram.
+Say in the board's README what you checked it against.
+
+**Find out which icons exist before designing the panels.** Missing icons change
+the design, so discover first:
+
+```bash
+python3 scripts/library.py find server     # which icon can I use for X
+python3 scripts/library.py search network  # find a whole library by topic
+```
+
+`find` searches icon names across every named library at once. If nothing comes
+back, the diagram wants shapes and boxes rather than icons — `flow`, `stack` and
+the built-in primitives carry most process, org and business diagrams without a
+single vendor icon.
+
 ## Build
 
 ```bash

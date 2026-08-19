@@ -60,12 +60,19 @@ LIBS = {
     "azg":    "7demonsrising/azure-general.excalidrawlib",
     "azk":    "7demonsrising/azure-containers.excalidrawlib",
     "azm":    "ubigene/misc-azure-icons.excalidrawlib",
+    # Non-cloud sets that carry business and process diagrams.
+    "orgchart": "jgodoy/organization-chart.excalidrawlib",
+    "figures":  "youritjang/stick-figures.excalidrawlib",
+    "parts":    "rochacbruno/computer-parts.excalidrawlib",
 }
 
 # Libraries that bake a caption into every icon. Their text is stripped so the
 # spec's own label is the only one — and is right.
 STRIP_TEXT = {"aws", "gcp", "az", "azdata", "azc", "azn", "azs",
-              "azg", "azk", "azm"}
+              "azg", "azk", "azm",
+              # org-chart items ship placeholder text ("Person Name") that
+              # would otherwise print on the board next to your own label
+              "orgchart"}
 
 # height / width for each primitive, so a layout can reserve space before drawing
 SHAPE_RATIO = {"doc": 1.25, "padlock": 1.12, "tag": 0.60, "clipboard": 1.25,
@@ -594,7 +601,11 @@ def flow(b, x, y, w, h, panel):
     """
     nodes = panel["nodes"]
     edges = panel.get("edges", [])
-    gap_x = panel.get("gap_x", 90)
+    # Reserve room for the labels the edges will carry. A fixed gap narrower
+    # than a label pushed that label onto the neighbouring node's own text.
+    widest_edge = max((measure(e[2], 16)[0] for e in edges if len(e) > 2),
+                      default=0)
+    gap_x = panel.get("gap_x", max(90, widest_edge + 40))
     gap_y = panel.get("gap_y", 70)
     node_h = panel.get("node_h", 78)
 
@@ -612,6 +623,10 @@ def flow(b, x, y, w, h, panel):
     total_w = sum(col_w) + gap_x * (cols - 1)
     extra = max((measure(n.get("note", ""), 16)[1] for n in nodes
                  if n.get("note")), default=0)
+    tallest = max((measure(wrap_text(n["label"], 20,
+                                     col_w[n.get("col", 0)] - 20), 20)[1] + 34)
+                  for n in nodes)
+    node_h = max(node_h, tallest)
     total_h = rows * (node_h + extra) + gap_y * (rows - 1)
     x0 = x + (w - total_w) / 2
     y0 = y + (h - 120 - total_h) / 2
@@ -622,11 +637,16 @@ def flow(b, x, y, w, h, panel):
         nx = x0 + sum(col_w[:c]) + gap_x * c
         ny = y0 + r * (node_h + extra + gap_y)
         bw, bh = col_w[c], node_h
+        # Wrap the label to the box. An unwrapped long name is wider than its
+        # own box, spills into the gap, and lands on the edge label there.
+        ltxt = wrap_text(n["label"], 20, bw - 20)
+        lw, lh = measure(ltxt, 20)
+        bh = max(node_h, lh + 34)
         b.add(rect(uid("n"), nx, ny, bw, bh, stroke=INK,
                    bg=colour(n.get("wash", "none")), radius=True))
-        lw, lh = measure(n["label"], 20)
-        b.add(txt(uid("t"), nx + (bw - lw) / 2, ny + (bh - lh) / 2,
-                  n["label"], 20, INK))
+        e = txt(uid("t"), nx + (bw - lw) / 2, ny + (bh - lh) / 2, ltxt, 20, INK)
+        e["textAlign"] = "center"
+        b.add(e)
         if n.get("note"):
             nt = wrap_text(n["note"], 16, bw + 40)
             nw, nh = measure(nt, 16)
@@ -658,12 +678,19 @@ def flow(b, x, y, w, h, panel):
                     curved=False))
         if lab:
             lw, lh = measure(lab, 16)
-            # Offset perpendicular to the arrow. Sitting the label above the
-            # midpoint works for horizontal edges and lands on top of diagonals.
             dx, dy = ex - sx, ey - sy
             n = (dx * dx + dy * dy) ** 0.5 or 1
             px, py = -dy / n, dx / n
-            off = 16
+            # Clear the boxes, not just the arrow. A label wider than the gap
+            # between two nodes lands on a node's own label otherwise.
+            if abs(dy) < 4:                      # horizontal edge
+                off = lh / 2 + 8
+                px, py = 0, -1
+            elif abs(dx) < 4:                    # vertical edge
+                off = max(24, lw / 2 + 14)
+                px, py = -1, 0
+            else:
+                off = 20
             b.add(txt(uid("t"),
                       (sx + ex) / 2 + px * off - lw / 2,
                       (sy + ey) / 2 + py * off - lh / 2,
