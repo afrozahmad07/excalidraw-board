@@ -1,0 +1,125 @@
+# excalidraw-board
+
+A [Claude Code](https://claude.com/claude-code) skill that turns a JSON spec into
+an **editable Excalidraw diagram** — built entirely from free community icon
+libraries.
+
+No image model. No API key. No cost. The output is a real `.excalidraw` file, so
+every box, arrow and label is still yours to drag around after import.
+
+![AWS services board](examples/aws-main-services.png)
+
+## Why this exists
+
+Most AI diagram tools hand you a picture. A picture is finished — you cannot fix
+the one label that is wrong, or move the box that overlaps.
+
+This produces the file instead. You describe a panel; the layout engine places
+it, checks nothing has fallen outside the frame, checks no two labels overlap,
+and writes an `.excalidraw` you open on excalidraw.com and edit like anything
+you drew yourself.
+
+It rebuilds identically every run, so a board is source you can version rather
+than an artefact you regenerate and hope.
+
+## Install
+
+```bash
+git clone https://github.com/afrozahmad07/excalidraw-board.git \
+  ~/.claude/skills/excalidraw-board
+python3 -m pip install pillow
+```
+
+That is the whole core dependency. Then ask Claude Code:
+
+> draw me a diagram of how a request reaches my database
+
+Optional extras, only for PNG export and shareable links:
+
+```bash
+python3 -m pip install playwright && python3 -m playwright install chromium
+```
+
+## Use it directly
+
+```bash
+python3 scripts/build.py specs/flow-demo.json
+```
+
+Lands in `boards/` where you ran it.
+
+```bash
+python3 scripts/verify_board.py boards/flow-demo.excalidraw   # structure
+python3 scripts/export_png.py  boards/flow-demo.excalidraw    # 2x PNG
+python3 scripts/share_link.py  boards/flow-demo.excalidraw    # public URL
+```
+
+## A spec
+
+No coordinates anywhere. You pick a `layout` and list the content.
+
+```json
+{
+  "title": "Request path",
+  "out": "boards/request-path.excalidraw",
+  "panels": [{
+    "head": "A request, end to end",
+    "layout": "flow",
+    "caption": "What happens between the browser and the database.",
+    "nodes": [
+      {"id": "client", "label": "Client",        "col": 0, "row": 1, "wash": "sky"},
+      {"id": "lb",     "label": "Load balancer", "col": 1, "row": 1, "wash": "mint",
+       "note": "health checks"},
+      {"id": "app",    "label": "App servers",   "col": 2, "row": 1, "wash": "lilac"},
+      {"id": "db",     "label": "Database",      "col": 3, "row": 1, "wash": "rose"}
+    ],
+    "edges": [["client","lb","api"], ["lb","app"], ["app","db","write"]]
+  }]
+}
+```
+
+Seven layouts: `flow` (boxes and arrows), `layers` (stacked tiers), `hub`,
+`row`, `grid`, `pair`, `stack`. Several panels in one spec become a story laid
+out left to right; one panel is just a diagram.
+
+Full reference in [SKILL.md](SKILL.md).
+
+## Examples
+
+Every one of these was built from the spec beside it, with no images generated.
+
+| Board | Spec |
+|---|---|
+| ![Tailscale ACLs](examples/tailscale-acls.png) | [`specs/tailscale-acls.json`](specs/tailscale-acls.json) |
+| ![GCP services](examples/gcp-main-services.png) | [`specs/gcp-services.json`](specs/gcp-services.json) |
+| ![Request path](examples/flow-demo.png) | [`specs/flow-demo.json`](specs/flow-demo.json) |
+
+## Icons
+
+Pulled from [excalidraw.com's 231 community
+libraries](https://github.com/excalidraw/excalidraw-libraries), cached locally on
+first use.
+
+```bash
+python3 scripts/library.py search network
+python3 scripts/library.py items dwelle/network-topology-icons.excalidrawlib
+```
+
+One rule saves most of the trouble: **if a library's items come back as
+`item-0 … item-N`, skip it.** About half the catalogue uses the older format
+with unnamed items, and identifying those means rendering each one by hand.
+
+## Credit
+
+The multi-panel format — title above, illustration, description below, arrows
+between, read left to right — is **Mark Kashef's** method, demonstrated in his
+Excalidraw Loom walkthrough. His version generates the illustrations with an
+image model and embeds them in the file.
+
+This is the free, fully-native take on the same idea: community icons instead of
+generated art, so there is no API key and nothing to pay, and the whole diagram
+stays editable rather than being a picture sitting on a canvas.
+
+## Licence
+
+MIT. See [LICENSE](LICENSE).

@@ -1,0 +1,86 @@
+{
+  "title": "Request path through a load-balanced app",
+  "out": "boards/flow-demo.excalidraw",
+  "panel_w": 1560,
+  "panel_h": 780,
+  "panels": [
+    {
+      "head": "A request, end to end",
+      "layout": "flow",
+      "caption": "A plain structural diagram \u2014 the shape the retired excalidraw-diagram skill produced, now bounds-checked and built from a spec.",
+      "nodes": [
+        {
+          "id": "client",
+          "label": "Client",
+          "col": 0,
+          "row": 1,
+          "wash": "sky"
+        },
+        {
+          "id": "cdn",
+          "label": "CDN",
+          "col": 1,
+          "row": 0,
+          "wash": "lemon",
+          "note": "static assets"
+        },
+        {
+          "id": "lb",
+          "label": "Load balancer",
+          "col": 1,
+          "row": 1,
+          "wash": "mint",
+          "note": "health checks"
+        },
+        {
+          "id": "app",
+          "label": "App servers",
+          "col": 2,
+          "row": 1,
+          "wash": "lilac"
+        },
+        {
+          "id": "cache",
+          "label": "Cache",
+          "col": 3,
+          "row": 0,
+          "wash": "peach"
+        },
+        {
+          "id": "db",
+          "label": "Database",
+          "col": 3,
+          "row": 1,
+          "wash": "rose",
+          "note": "primary"
+        }
+      ],
+      "edges": [
+        [
+          "client",
+          "cdn",
+          "assets"
+        ],
+        [
+          "client",
+          "lb",
+          "api"
+        ],
+        [
+          "lb",
+          "app"
+        ],
+        [
+          "app",
+          "cache",
+          "read"
+        ],
+        [
+          "app",
+          "db",
+          "write"
+        ]
+      ]
+    }
+  ]
+}

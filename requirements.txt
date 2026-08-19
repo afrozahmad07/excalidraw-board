@@ -1,0 +1,5 @@
+# core
+pillow>=10.0
+
+# optional — only for export_png.py and share_link.py
+# playwright>=1.40

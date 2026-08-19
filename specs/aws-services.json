@@ -1,0 +1,701 @@
+{
+  "title": "The main AWS services",
+  "out": "boards/aws-main-services.excalidraw",
+  "panel_w": 1560,
+  "panel_h": 860,
+  "gap": 320,
+  "panels": [
+    {
+      "head": "How the pieces stack up",
+      "layout": "layers",
+      "item_size": 46,
+      "caption": "A request arrives at the edge, is routed at the entry tier, handled by compute, and reads or writes state in the data tier. Identity, keys, metrics and templates cut across all four.",
+      "side": "a request travels top to bottom",
+      "bands": [
+        {
+          "label": "Edge",
+          "note": "first thing a request touches",
+          "wash": "sky",
+          "items": [
+            {
+              "icon": [
+                "aws",
+                "Route 53"
+              ],
+              "label": "Route 53"
+            },
+            {
+              "icon": [
+                "aws",
+                "CloudFront"
+              ],
+              "label": "CloudFront"
+            },
+            {
+              "icon": [
+                "aws",
+                "WAF"
+              ],
+              "label": "WAF",
+              "full": "Web Application Firewall"
+            }
+          ]
+        },
+        {
+          "label": "Entry",
+          "note": "routing, auth and throttling",
+          "wash": "mint",
+          "items": [
+            {
+              "icon": [
+                "aws",
+                "ELB"
+              ],
+              "label": "ELB",
+              "full": "Elastic Load Balancing"
+            },
+            {
+              "icon": [
+                "aws",
+                "API Gateway"
+              ],
+              "label": "API Gateway",
+              "full": "Application Programming Interface"
+            }
+          ]
+        },
+        {
+          "label": "Compute",
+          "note": "where your code actually runs",
+          "wash": "lemon",
+          "items": [
+            {
+              "icon": [
+                "aws",
+                "EC2"
+              ],
+              "label": "EC2",
+              "full": "Elastic Compute Cloud"
+            },
+            {
+              "icon": [
+                "aws",
+                "ECS"
+              ],
+              "label": "ECS",
+              "full": "Elastic Container Service"
+            },
+            {
+              "icon": [
+                "aws",
+                "Lambda"
+              ],
+              "label": "Lambda"
+            },
+            {
+              "icon": [
+                "aws",
+                "Fargate"
+              ],
+              "label": "Fargate"
+            }
+          ]
+        },
+        {
+          "label": "Data",
+          "note": "everything stateful lives here",
+          "wash": "lilac",
+          "items": [
+            {
+              "icon": [
+                "aws",
+                "RDS"
+              ],
+              "label": "RDS",
+              "full": "Relational Database Service"
+            },
+            {
+              "icon": [
+                "aws",
+                "DynamoDB"
+              ],
+              "label": "DynamoDB"
+            },
+            {
+              "icon": [
+                "aws",
+                "ElastiCache"
+              ],
+              "label": "ElastiCache"
+            },
+            {
+              "icon": [
+                "aws",
+                "S3"
+              ],
+              "label": "S3",
+              "full": "Simple Storage Service"
+            }
+          ]
+        },
+        {
+          "label": "Across every layer",
+          "note": "identity, keys, metrics, templates",
+          "wash": "peach",
+          "items": [
+            {
+              "icon": [
+                "aws",
+                "IAM"
+              ],
+              "label": "IAM",
+              "full": "Identity and Access Management"
+            },
+            {
+              "icon": [
+                "aws",
+                "KMS"
+              ],
+              "label": "KMS",
+              "full": "Key Management Service"
+            },
+            {
+              "icon": [
+                "aws",
+                "CloudTrail"
+              ],
+              "label": "CloudTrail"
+            },
+            {
+              "icon": [
+                "aws",
+                "CloudWatch"
+              ],
+              "label": "CloudWatch"
+            },
+            {
+              "icon": [
+                "aws",
+                "CloudFormation"
+              ],
+              "label": "CloudFormation"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "head": "Compute \u2014 where code runs",
+      "layout": "grid",
+      "cols": 4,
+      "item_size": 92,
+      "caption": "The choice is how much of the machine you want to stop thinking about, from a whole virtual server down to a single function.",
+      "items": [
+        {
+          "icon": [
+            "aws",
+            "EC2"
+          ],
+          "marker": "EC2",
+          "tint": "lemon",
+          "note": "Virtual machines you rent. Billed per second after the first minute.",
+          "full": "Elastic Compute Cloud"
+        },
+        {
+          "icon": [
+            "aws",
+            "Lambda"
+          ],
+          "label": "Lambda",
+          "wash": "lemon",
+          "note": "Run a function, no server to manage. Hard 15-minute ceiling per run."
+        },
+        {
+          "icon": [
+            "aws",
+            "ECS"
+          ],
+          "label": "ECS",
+          "wash": "mint",
+          "note": "Runs containers using AWS's own scheduler. No Kubernetes to learn.",
+          "full": "Elastic Container Service"
+        },
+        {
+          "icon": [
+            "aws",
+            "EKS"
+          ],
+          "label": "EKS",
+          "wash": "mint",
+          "note": "Managed Kubernetes control plane. You still pay for the worker nodes.",
+          "full": "Elastic Kubernetes Service"
+        },
+        {
+          "icon": [
+            "aws",
+            "Fargate"
+          ],
+          "label": "Fargate",
+          "wash": "sky",
+          "note": "Containers with no EC2 underneath. You size the task, not the machine."
+        },
+        {
+          "icon": [
+            "aws",
+            "ECR"
+          ],
+          "label": "ECR",
+          "wash": "lilac",
+          "full": "Elastic Container Registry",
+          "note": "Private registry for your container images. ECS and EKS pull from it."
+        },
+        {
+          "icon": [
+            "aws",
+            "Auto scaling"
+          ],
+          "label": "Auto Scaling",
+          "wash": "peach",
+          "note": "Adds and removes instances to track demand. Replaces unhealthy ones too."
+        }
+      ]
+    },
+    {
+      "head": "Storage \u2014 where bytes sit",
+      "layout": "grid",
+      "cols": 4,
+      "item_size": 92,
+      "caption": "Four different shapes of storage. Picking the wrong one is usually a cost problem rather than a correctness one.",
+      "items": [
+        {
+          "icon": [
+            "aws",
+            "S3"
+          ],
+          "marker": "S3",
+          "tint": "peach",
+          "note": "Object storage for files of any size. Eleven nines of durability.",
+          "full": "Simple Storage Service"
+        },
+        {
+          "icon": [
+            "aws",
+            "EBS"
+          ],
+          "label": "EBS",
+          "wash": "lilac",
+          "note": "A virtual disk attached to one EC2. Lives in a single Availability Zone.",
+          "full": "Elastic Block Store"
+        },
+        {
+          "icon": [
+            "aws",
+            "EFS"
+          ],
+          "label": "EFS",
+          "wash": "mint",
+          "note": "A shared file system many servers mount at once. Grows on its own.",
+          "full": "Elastic File System"
+        },
+        {
+          "icon": [
+            "aws",
+            "Glacier"
+          ],
+          "label": "Glacier",
+          "wash": "sky",
+          "note": "Archive storage priced to be forgotten. Retrieval takes minutes to hours."
+        }
+      ]
+    },
+    {
+      "head": "Databases \u2014 where state lives",
+      "layout": "grid",
+      "cols": 3,
+      "item_size": 92,
+      "caption": "Relational when the shape of the data matters, key-value when scale and latency matter, a cache in front when reads dominate.",
+      "items": [
+        {
+          "icon": [
+            "aws",
+            "RDS"
+          ],
+          "label": "RDS",
+          "wash": "lilac",
+          "note": "Managed relational databases. Patching and backups handled for you.",
+          "full": "Relational Database Service"
+        },
+        {
+          "icon": [
+            "aws",
+            "Aurora"
+          ],
+          "label": "Aurora",
+          "wash": "lilac",
+          "note": "AWS's own MySQL and Postgres engine. Storage grows as you write."
+        },
+        {
+          "icon": [
+            "aws",
+            "DynamoDB"
+          ],
+          "marker": "DynamoDB",
+          "tint": "peach",
+          "note": "Key-value store, no servers. Single-digit millisecond reads at scale."
+        },
+        {
+          "icon": [
+            "aws",
+            "ElastiCache"
+          ],
+          "label": "ElastiCache",
+          "wash": "mint",
+          "note": "Managed Redis or Memcached. Sits in front of a database to absorb reads."
+        },
+        {
+          "icon": [
+            "aws",
+            "Redshift"
+          ],
+          "label": "Redshift",
+          "wash": "sky",
+          "note": "Warehouse for analytics. Columnar storage, built for very large scans."
+        }
+      ]
+    },
+    {
+      "head": "Networking and delivery",
+      "layout": "grid",
+      "cols": 4,
+      "item_size": 92,
+      "caption": "The path a request takes before it reaches your code: name lookup, edge cache, filtering, load balancing, then the API front door.",
+      "items": [
+        {
+          "icon": [
+            "aws",
+            "VPC"
+          ],
+          "marker": "VPC",
+          "tint": "sky",
+          "note": "Your own private network inside AWS. Nothing reaches in until you allow it.",
+          "full": "Virtual Private Cloud"
+        },
+        {
+          "icon": [
+            "aws",
+            "Route 53"
+          ],
+          "label": "Route 53",
+          "wash": "mint",
+          "note": "DNS and domain registration. Named after DNS port 53."
+        },
+        {
+          "icon": [
+            "aws",
+            "CloudFront"
+          ],
+          "label": "CloudFront",
+          "wash": "sky",
+          "note": "Caches content close to your users and terminates TLS at the edge."
+        },
+        {
+          "icon": [
+            "aws",
+            "ELB"
+          ],
+          "label": "ELB",
+          "wash": "lemon",
+          "note": "Spreads traffic across healthy targets and drops any that fail a check.",
+          "full": "Elastic Load Balancing"
+        },
+        {
+          "icon": [
+            "aws",
+            "API Gateway"
+          ],
+          "label": "API Gateway",
+          "wash": "lilac",
+          "note": "Front door for APIs. Throttling and auth without writing either.",
+          "full": "Application Programming Interface"
+        },
+        {
+          "icon": [
+            "aws",
+            "Transit Gateway"
+          ],
+          "label": "Transit Gateway",
+          "wash": "mint",
+          "note": "One hub joining many VPCs and on-prem links, instead of a mesh of peerings."
+        },
+        {
+          "icon": [
+            "aws",
+            "Direct Connect"
+          ],
+          "label": "Direct Connect",
+          "wash": "peach",
+          "note": "A private physical line into AWS. Predictable latency, no public internet."
+        }
+      ]
+    },
+    {
+      "head": "Analytics and AI",
+      "layout": "grid",
+      "cols": 3,
+      "item_size": 92,
+      "caption": "Getting data in, querying it where it already sits, and putting a model in front of it. Bedrock is the one most teams reach for first now.",
+      "items": [
+        {
+          "icon": [
+            "aws",
+            "Kinesis"
+          ],
+          "label": "Kinesis",
+          "wash": "sky",
+          "note": "Ingests streaming events in real time, before anything is stored."
+        },
+        {
+          "icon": [
+            "aws",
+            "Glue"
+          ],
+          "label": "Glue",
+          "wash": "lilac",
+          "note": "Catalogues your data and runs the jobs that reshape it."
+        },
+        {
+          "icon": [
+            "aws",
+            "Athena"
+          ],
+          "label": "Athena",
+          "wash": "mint",
+          "note": "SQL straight over files in S3. No cluster, priced per byte scanned."
+        },
+        {
+          "icon": [
+            "aws",
+            "EMR"
+          ],
+          "label": "EMR",
+          "wash": "peach",
+          "full": "Elastic MapReduce",
+          "note": "Managed Spark and Hadoop clusters for heavy processing."
+        },
+        {
+          "icon": [
+            "aws",
+            "SageMaker"
+          ],
+          "label": "SageMaker",
+          "wash": "lemon",
+          "note": "Build, train and host your own machine-learning models."
+        },
+        {
+          "icon": [
+            "aws",
+            "Amazon Bedrock"
+          ],
+          "marker": "Bedrock",
+          "tint": "rose",
+          "note": "Foundation models behind one API, including Anthropic's Claude."
+        }
+      ]
+    },
+    {
+      "head": "Security and identity",
+      "layout": "grid",
+      "cols": 3,
+      "item_size": 92,
+      "caption": "IAM decides every call in your account. The rest narrow the blast radius when something does get through.",
+      "items": [
+        {
+          "icon": [
+            "aws",
+            "IAM"
+          ],
+          "marker": "IAM",
+          "tint": "rose",
+          "note": "Who may do what, to which resource. An explicit deny always wins.",
+          "full": "Identity and Access Management"
+        },
+        {
+          "icon": [
+            "aws",
+            "KMS"
+          ],
+          "label": "KMS",
+          "wash": "peach",
+          "note": "Managed encryption keys. Key material never leaves the service in the clear.",
+          "full": "Key Management Service"
+        },
+        {
+          "icon": [
+            "aws",
+            "Cognito"
+          ],
+          "label": "Cognito",
+          "wash": "lilac",
+          "note": "Sign-up and sign-in for your app's users. Issues tokens your API verifies."
+        },
+        {
+          "icon": [
+            "aws",
+            "WAF"
+          ],
+          "label": "WAF",
+          "wash": "rose",
+          "note": "Filters malicious web requests. Sits in front of CloudFront or a load balancer.",
+          "full": "Web Application Firewall"
+        },
+        {
+          "icon": [
+            "aws",
+            "GuardDuty"
+          ],
+          "label": "GuardDuty",
+          "wash": "mint",
+          "note": "Watches logs for suspicious behaviour. It reports findings, it does not block."
+        },
+        {
+          "icon": [
+            "aws",
+            "Secrets Manager"
+          ],
+          "label": "Secrets Manager",
+          "wash": "sky",
+          "note": "Stores and rotates credentials. Apps fetch at runtime instead of hardcoding."
+        }
+      ]
+    },
+    {
+      "head": "Messaging, events and operations",
+      "layout": "grid",
+      "cols": 3,
+      "item_size": 92,
+      "caption": "The glue between services, plus the two things you will want the first time something breaks in production.",
+      "items": [
+        {
+          "icon": [
+            "aws",
+            "SQS"
+          ],
+          "label": "SQS",
+          "wash": "lemon",
+          "note": "A queue holding work until something takes it. A consumer can fail safely.",
+          "full": "Simple Queue Service"
+        },
+        {
+          "icon": [
+            "aws",
+            "SNS"
+          ],
+          "label": "SNS",
+          "wash": "peach",
+          "note": "Publishes one message to many subscribers at once. Fan-out, not a queue.",
+          "full": "Simple Notification Service"
+        },
+        {
+          "icon": [
+            "aws",
+            "EventBridge"
+          ],
+          "label": "EventBridge",
+          "wash": "lilac",
+          "note": "Routes events between services by rule, including events from SaaS apps."
+        },
+        {
+          "icon": [
+            "aws",
+            "Step Functions"
+          ],
+          "label": "Step Functions",
+          "wash": "mint",
+          "note": "Orchestrates steps as a state machine. Retries and branching without glue."
+        },
+        {
+          "icon": [
+            "aws",
+            "CloudWatch"
+          ],
+          "marker": "CloudWatch",
+          "tint": "sky",
+          "note": "Metrics, logs and alarms. Almost everything reports here by default."
+        },
+        {
+          "icon": [
+            "aws",
+            "CloudFormation"
+          ],
+          "label": "CloudFormation",
+          "wash": "peach",
+          "note": "Your infrastructure as a template. Rolls the whole stack back on failure."
+        }
+      ]
+    },
+    {
+      "head": "Governance, audit and recovery",
+      "layout": "grid",
+      "cols": 3,
+      "item_size": 92,
+      "caption": "The account-level layer. Boring until an audit, an incident, or a bill that nobody can explain.",
+      "items": [
+        {
+          "icon": [
+            "aws",
+            "CloudTrail"
+          ],
+          "marker": "CloudTrail",
+          "tint": "rose",
+          "note": "Records every API call in the account. The first place to look after an incident."
+        },
+        {
+          "icon": [
+            "aws",
+            "Config"
+          ],
+          "label": "Config",
+          "wash": "lilac",
+          "note": "Tracks how each resource is configured and flags drift from your rules."
+        },
+        {
+          "icon": [
+            "aws",
+            "Organizations"
+          ],
+          "label": "Organizations",
+          "wash": "mint",
+          "note": "Many accounts under one root, with guardrails and one bill."
+        },
+        {
+          "icon": [
+            "aws",
+            "Security Hub"
+          ],
+          "label": "Security Hub",
+          "wash": "sky",
+          "note": "Collects findings from GuardDuty, Config and others into one view."
+        },
+        {
+          "icon": [
+            "aws",
+            "Certificate Manager"
+          ],
+          "label": "ACM",
+          "wash": "peach",
+          "full": "AWS Certificate Manager",
+          "note": "Issues and renews TLS certificates for free. Renewal is automatic."
+        },
+        {
+          "icon": [
+            "aws",
+            "Backup"
+          ],
+          "label": "Backup",
+          "wash": "lemon",
+          "note": "One backup policy across EBS, RDS, DynamoDB, EFS and more."
+        }
+      ]
+    }
+  ]
+}
