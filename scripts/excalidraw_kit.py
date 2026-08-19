@@ -92,13 +92,13 @@ def txt(eid, x, y, s, size=16, color="#1e1e1e", fam=VIRGIL, center_in=None):
                 lineHeight=1.25, autoResize=True)
 
 
-def arrow(eid, x, y, dx, dy=0, color="#1e1e1e", curved=True):
+def arrow(eid, x, y, dx, dy=0, color="#1e1e1e", curved=True, **kw):
     return base(eid, "arrow", x, y, dx, dy, stroke=color,
                 points=[[0, 0], [dx, dy]], lastCommittedPoint=None,
                 startBinding=None, endBinding=None,
                 startArrowhead=None, endArrowhead="arrow",
                 roundness={"type": 2} if curved else None,
-                elbowed=False)
+                elbowed=False, **kw)
 
 
 def line(eid, x, y, dx, dy=0, color="#1e1e1e", style="solid"):

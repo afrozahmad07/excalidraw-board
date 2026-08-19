@@ -76,7 +76,7 @@ def check_collisions(elements, name):
 
 REQUIRED = {"flow": ("nodes",), "layers": ("bands",), "hub": ("centre", "items"),
             "row": ("items",), "grid": ("items",), "pair": ("left", "right"),
-            "stack": ("rows",)}
+            "stack": ("rows",), "poster": ("items",)}
 
 
 def validate(spec):

@@ -29,8 +29,8 @@ than an artefact you regenerate and hope.
 - **Finds icons for your subject.** `library.py find <word>` searches icon
   names across every usable community library at once, so you see what exists
   before designing the panels.
-- **Seven layouts**, so you describe the shape of the idea rather than placing
-  boxes: `flow`, `layers`, `hub`, `row`, `grid`, `pair`, `stack`.
+- **Eight layouts**, so you describe the shape of the idea rather than placing
+  boxes: `flow`, `layers`, `hub`, `row`, `grid`, `pair`, `stack`, `poster`.
 - **No coordinates in the spec.** Columns, rows, gaps and wrapping are all
   measured from the content.
 - **Auto-fits.** Rows that do not fit close their gaps and then shrink, long
@@ -103,8 +103,9 @@ No coordinates anywhere. You pick a `layout` and list the content.
 }
 ```
 
-Seven layouts: `flow` (boxes and arrows), `layers` (stacked tiers), `hub`,
-`row`, `grid`, `pair`, `stack`. Several panels in one spec become a story laid
+Eight layouts: `flow` (boxes and arrows), `layers` (stacked tiers), `hub`,
+`row`, `grid`, `pair`, `stack`, and `poster` — one rich block with labelled
+zones, items placed by relative position, and connectors between them. Several panels in one spec become a story laid
 out left to right; one panel is just a diagram.
 
 Full reference in [SKILL.md](SKILL.md).

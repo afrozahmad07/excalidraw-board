@@ -63,6 +63,7 @@ A panel picks a `layout` and lists its content.
 | `grid` | a family of related items, `cols` per row, lightly connected |
 | `pair` | left thing, arrow, right thing; `blocked: true` stops the arrow short |
 | `stack` | a card of labelled rows — an anatomy diagram |
+| `poster` | one rich block: labelled zones, free placement, connectors |
 
 Several panels in one spec become a story, laid out left to right with arrows
 between them. One panel is just a diagram.

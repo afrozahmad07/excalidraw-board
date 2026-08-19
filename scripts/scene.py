@@ -704,5 +704,119 @@ def flow(b, x, y, w, h, panel):
                       lab, 16, MUTED))
 
 
+def poster(b, x, y, w, h, panel):
+    """One rich block: labelled zones, items placed by relative position, and
+    connectors between them.
+
+    The other layouts each impose a shape. This one gives full composition while
+    staying declarative — positions are fractions of the panel (0..1), so the
+    spec still carries no pixel coordinates and the bounds check still applies.
+
+        "zones": [{"label": "control plane", "x": .04, "y": .04,
+                   "w": .92, "h": .3, "wash": "sky", "note": "..."}],
+        "items": [{"id": "coord", "icon": ["net","Server"], "label": "…",
+                   "x": .5, "y": .18, "size": 110, "note": "…"}],
+        "edges": [{"from": "a", "to": "coord", "label": "…", "dashed": true}],
+        "notes": [{"text": "…", "x": .5, "y": .93, "size": 20}]
+    """
+    zones = panel.get("zones", [])
+    items = panel.get("items", [])
+    edges = panel.get("edges", [])
+    notes = panel.get("notes", [])
+    X = lambda f: x + f * w
+    Y = lambda f: y + f * h
+
+    for z in zones:
+        zx, zy = X(z["x"]), Y(z["y"])
+        zw, zh = z["w"] * w, z["h"] * h
+        b.add(rect(uid("z"), zx, zy, zw, zh, stroke="#cfc4b2",
+                   bg=colour(z.get("wash", "none")), radius=True))
+        lw, lh = measure(z["label"], 20)
+        b.add(txt(uid("t"), zx + 20, zy + 14, z["label"], 20, INK))
+        if z.get("note"):
+            b.add(txt(uid("t"), zx + 20, zy + 16 + lh, z["note"], 15, MUTED))
+
+    # Items are placed centre-first so an edge can aim at the middle of one.
+    pos = {}
+    for it in items:
+        size = it.get("size", 90)
+        iw, ih = item_size(it, size)
+        cx, cy = X(it["x"]), Y(it["y"])
+        top = cy - ih / 2
+        if it.get("wash"):
+            wash(b, cx, cy, size * 1.42, it["wash"])
+        if "shape" in it:
+            SHAPES[it["shape"]](b, cx, top, size)
+        else:
+            src = LIBS.get(it["icon"][0], it["icon"][0])
+            entry = lib.find_item(src, it["icon"][1])
+            if not entry:
+                raise SystemExit(f"poster: icon not found {it['icon']}")
+            els, _ = lib.stamp(entry, cx - size / 2, top, target_w=size,
+                               uid=uid("lib"),
+                               drop_text=it["icon"][0] in STRIP_TEXT)
+            b.add(*els)
+        bottom = top + ih
+        if it.get("marker"):
+            _, mh = marker(b, it["marker"], cx, bottom + 12, it.get("tint", "peach"), 22)
+            bottom += 12 + mh
+        elif it.get("label"):
+            lt = wrap_text(it["label"], 19, it.get("text_w", 200))
+            lw, lh = measure(lt, 19)
+            e = txt(uid("t"), clamp(cx, lw) - lw / 2, bottom + 12, lt, 19, INK)
+            e["textAlign"] = "center"; b.add(e)
+            bottom += 12 + lh
+        if it.get("note"):
+            nt = wrap_text(it["note"], 15, it.get("text_w", 210))
+            nw, nh = measure(nt, 15)
+            e = txt(uid("t"), clamp(cx, nw) - nw / 2, bottom + 6, nt, 15, MUTED)
+            e["textAlign"] = "center"; b.add(e)
+        # Remember the full drawn extent (icon + label + note), so an arrow
+        # arriving from below stops before the caption instead of crossing it.
+        pos[it.get("id")] = (cx, cy, size, ih, (bottom - (cy - ih / 2)) * 2)
+
+    for e in edges:
+        a, c = pos.get(e["from"]), pos.get(e["to"])
+        if not a or not c:
+            raise SystemExit(f"poster: edge {e.get('from')}->{e.get('to')} "
+                             f"names an unknown item id")
+        ax, ay, aw, ah, afull = a
+        bx, by, bw2, bh2, bfull = c
+        dx, dy = bx - ax, by - ay
+        n = (dx*dx + dy*dy) ** 0.5 or 1
+        ux, uy = dx/n, dy/n
+        # Trim on an ellipse around each item: half its width across, half its
+        # FULL height down. A circular trim let arrows run through the caption.
+        def edge(hw, hh, sign):
+            rx, ry = hw + 10, hh + 10
+            denom = ((ux/rx)**2 + (uy/ry)**2) ** 0.5 or 1
+            t = 1/denom
+            return sign*ux*t, sign*uy*t
+        sdx, sdy = edge(aw/2, afull/2, 1)
+        edx, edy = edge(bw2/2, bfull/2, -1)
+        sx, sy = ax + sdx, ay + sdy
+        ex, ey = bx + edx, by + edy
+        b.add(arrow(uid("a"), sx, sy, ex-sx, ey-sy,
+                    color=colour(e.get("colour", "#7d7266")),
+                    curved=False, strokeStyle="dashed" if e.get("dashed") else "solid"))
+        if e.get("label"):
+            lt = wrap_text(e["label"], 15, 190)
+            lw, lh = measure(lt, 15)
+            px, py = -dy/n, dx/n
+            off = e.get("offset", 20)
+            t = txt(uid("t"), (sx+ex)/2 + px*off - lw/2,
+                    (sy+ey)/2 + py*off - lh/2, lt, 15, MUTED)
+            t["textAlign"] = "center"; b.add(t)
+
+    for nt in notes:
+        size = nt.get("size", 19)
+        t = wrap_text(nt["text"], size, nt.get("w", 520))
+        tw, th = measure(t, size)
+        e = txt(uid("t"), clamp(X(nt["x"]), tw) - tw/2, Y(nt["y"]) - th/2, t,
+                size, colour(nt.get("colour", MUTED)))
+        e["textAlign"] = "center"; b.add(e)
+
+
 LAYOUTS = {"hub": hub, "row": row, "grid": grid, "pair": pair,
-           "stack": stack, "layers": layers, "flow": flow}
+           "stack": stack, "layers": layers, "flow": flow,
+           "poster": poster}
