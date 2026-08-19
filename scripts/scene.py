@@ -601,16 +601,20 @@ def flow(b, x, y, w, h, panel):
     """
     nodes = panel["nodes"]
     edges = panel.get("edges", [])
-    # Reserve room for the labels the edges will carry. A fixed gap narrower
-    # than a label pushed that label onto the neighbouring node's own text.
-    widest_edge = max((measure(e[2], 16)[0] for e in edges if len(e) > 2),
-                      default=0)
-    gap_x = panel.get("gap_x", max(90, widest_edge + 40))
     gap_y = panel.get("gap_y", 70)
     node_h = panel.get("node_h", 78)
-
     cols = max(n.get("col", 0) for n in nodes) + 1
     rows = max(n.get("row", 0) for n in nodes) + 1
+
+    # Reserve room for the labels the edges carry, but cap what they can claim.
+    # A gap narrower than a label pushed it onto the neighbouring node's text;
+    # an uncapped one let a 30-character label inflate the gap to 450px and
+    # starve the nodes either side down to unreadable boxes.
+    EDGE_W = 210
+    edge_txt = {id(e): wrap_text(e[2], 16, EDGE_W) for e in edges if len(e) > 2}
+    widest_edge = max((measure(t, 16)[0] for t in edge_txt.values()), default=0)
+    room = (w - 2 * MARGIN) / (max(cols, 2) + 1)
+    gap_x = panel.get("gap_x", max(90, min(widest_edge + 40, room)))
 
     # Column widths come from the widest label in each column, so a long name
     # widens only its own column instead of stretching the whole diagram.
@@ -677,6 +681,7 @@ def flow(b, x, y, w, h, panel):
         b.add(arrow(uid("a"), sx, sy, ex - sx, ey - sy, color=INK,
                     curved=False))
         if lab:
+            lab = edge_txt.get(id(edge), lab)
             lw, lh = measure(lab, 16)
             dx, dy = ex - sx, ey - sy
             n = (dx * dx + dy * dy) ** 0.5 or 1
