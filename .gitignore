@@ -5,3 +5,4 @@ __pycache__/
 .venv/
 venv/
 .env
+specs/tailscale-how-it-works.json
