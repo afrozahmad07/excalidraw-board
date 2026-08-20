@@ -99,8 +99,11 @@ python3 scripts/library.py items dwelle/network-topology-icons.excalidrawlib
 ```
 
 Registered shorthands are in `scene.py` under `LIBS`: `net`, `aws`, `gcp`,
-`az` and friends, `people`, `logos`, `office`. Any library works — pass its full
-`owner/name.excalidrawlib` instead of a shorthand.
+`az` and friends, `logos`, `office`, plus three that carry non-technical
+diagrams: `people` and `figures` (stick people — man, woman, girl, guy,
+grandma, child, talking, thinking) and `orgchart` (position and team boxes).
+Any library works — pass its full `owner/name.excalidrawlib` instead of a
+shorthand.
 
 **Choosing a library, in order:**
 
@@ -120,6 +123,25 @@ caption into the artwork, and some are wrong for general use — CloudWatch's
 reads "Instance with CloudWatch". `STRIP_TEXT` in `scene.py` lists libraries
 whose text is dropped at stamp time so the spec's label is the only one. Check
 for this when adding a library.
+
+## What people actually ask for
+
+Requests arrive in plain language. These are the shapes they take, and what to
+reach for. Do not make the user learn the spec format — read the request, pick
+the layout, write the spec yourself.
+
+| They say | Use |
+|---|---|
+| "how X works", "how a request reaches Y" | `flow`, one panel |
+| "all of it in one diagram / one block" | `poster` with zones |
+| "who does what", "our team", "who owns what" | `grid` with `figures` or `orgchart` |
+| "compare A and B", "when to move from A to B" | `flow` left to right, or `pair` |
+| "the layers of X", "what sits where" | `layers` |
+| "explain X" with several parts | several panels, read left to right |
+
+When someone names a look — "stick people", "doodle", "with AWS icons" — that is
+a library choice, not a layout choice. Run `library.py find` on the noun they
+used before deciding the design.
 
 ## Design rules
 

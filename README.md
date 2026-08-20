@@ -55,9 +55,21 @@ git clone https://github.com/afrozahmad07/excalidraw-board.git \
 python3 -m pip install pillow
 ```
 
-That is the whole core dependency. Then ask Claude Code:
+That is the whole core dependency. Then just ask Claude Code, in plain language:
 
 > draw me a diagram of how a request reaches my database
+
+> make an excalidraw board of who owns what in my business — founder, marketing,
+> sales, delivery — use the stick figures
+
+> make an excalidraw poster of how OAuth works, all in one block with labelled zones
+
+> draw how my current setup works end to end: laptop, VPS, Postgres, S3 backups
+
+> draw an AWS diagram — Route 53, CloudFront, load balancer, EC2, RDS
+
+You never write the spec yourself. It picks the layout, finds the icons and
+writes it.
 
 Optional extras, only for PNG export and shareable links:
 
