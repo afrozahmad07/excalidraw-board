@@ -124,6 +124,25 @@ reads "Instance with CloudWatch". `STRIP_TEXT` in `scene.py` lists libraries
 whose text is dropped at stamp time so the spec's label is the only one. Check
 for this when adding a library.
 
+## Two kinds of request
+
+**Public topic** — "how HTTPS works", "the main AWS services", "how Tailscale
+works". Research it and draw it. You have everything you need.
+
+**Their own thing** — "my team", "our onboarding", "my setup". You know nothing
+about it, so **ask for the parts before drawing anything**. One short question,
+then draw:
+
+> Who's on the team and who reports to whom?
+
+> What are the steps, roughly in order?
+
+Do not invent their team, their stack or their process and hand it over as if it
+were theirs. A made-up diagram of someone's own business is worse than no
+diagram — they have to spot every wrong bit themselves.
+
+If they already listed the parts in the request, you have what you need. Draw it.
+
 ## What people actually ask for
 
 Requests arrive in plain language. These are the shapes they take, and what to
