@@ -62,8 +62,20 @@ def fetch(source):
     return _get(RAW.format(source=source), dest)
 
 
+_LOADED = {}
+
+
 def load(source_or_path):
-    """Return [{name, elements}], normalising both library formats."""
+    """Return [{name, elements}], normalising both library formats.
+
+    Memoised on the path. Every icon lookup used to re-read and re-parse the
+    whole file, and the auto-fit multiplies that by the number of probe widths:
+    a twelve-icon board with no panel_w parsed a 249-item library three hundred
+    times. Nothing mutates what comes back — `stamp()` deep-copies before it
+    touches anything — so one parse per file is enough.
+    """
+    if str(source_or_path) in _LOADED:
+        return _LOADED[str(source_or_path)]
     p = pathlib.Path(source_or_path)
     if not p.exists():
         p = fetch(str(source_or_path))
@@ -78,6 +90,7 @@ def load(source_or_path):
             out.append({"name": f"item-{i}", "elements": els})
     else:
         raise ValueError(f"{p.name}: not an excalidrawlib file")
+    _LOADED[str(source_or_path)] = out
     return out
 
 
@@ -183,9 +196,25 @@ def stamp(item, x, y, target_w=None, uid="s", tint=None, drop_text=False):
         e.setdefault("locked", False)
         e.setdefault("isDeleted", False)
         e["groupIds"] = [gid]
-        if tint:
+        # Recolour the icon's LINES only, and only the lines that were already
+        # visible. Several icons carry an invisible bounding rectangle (the
+        # network set's Server has one, stroke "#0000"); tinting that would draw
+        # a box around an icon that never had one.
+        if tint and not _invisible(e.get("strokeColor")):
             e["strokeColor"] = tint
     return els, (bw * k, bh * k)
+
+
+def _invisible(colour):
+    """True for 'transparent' and for #rgba / #rrggbbaa with a zero alpha."""
+    if not colour or colour == "transparent":
+        return True
+    c = str(colour).lstrip("#")
+    if len(c) == 4:
+        return c[3] == "0"
+    if len(c) == 8:
+        return c[6:] == "00"
+    return False
 
 
 def _cli():

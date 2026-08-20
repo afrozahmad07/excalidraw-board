@@ -32,6 +32,13 @@ FULL_C = "#9c6644"
 FULL_SIZE = 15
 FULL_SIZE_BAND = 12
 PANEL_BG = "#fffdf6"
+BACKGROUND = "#fdf6e3"     # the canvas behind every panel
+TITLE_C = "#e8590c"        # panel headings
+FRAME = "#d6ccbd"          # the panel border
+ZONE = "#cfc4b2"           # layers band and poster zone outlines — a shade darker
+HAIR = "#c9bfae"           # the faint connector drawn between grid items
+CARD = "#ffffff"           # the stack layout's card fill
+ACCENT = "#862e9c"         # the pair layout's arrow and its barrier
 
 # Every wash is checked for contrast against the cream ground. "lemon"
 # (#fff3bf) used to be here and scored 1.03 — invisible on cream.
@@ -39,6 +46,16 @@ PALETTE = {
     "mint": "#c3fae8", "lilac": "#e9d8fd", "sky": "#d0ebff",
     "peach": "#ffd8a8", "rose": "#ffc9c9", "sage": "#b2f2bb",
     "none": "transparent",
+}
+
+# Line colours for `icon_tint`. The washes above are pastels meant to sit
+# BEHIND an icon; used as a stroke they are close to invisible. These are
+# Excalidraw's own stroke palette, so a tinted icon still matches anything you
+# draw by hand afterwards.
+INKS = {
+    "red": "#e03131", "green": "#2f9e44", "blue": "#1971c2",
+    "orange": "#f08c00", "violet": "#6741d9", "teal": "#0c8599",
+    "grey": "#868e96", "black": "#1e1e1e",
 }
 
 LIBS = {
@@ -90,6 +107,124 @@ def uid(p="e"):
 
 def colour(name):
     return PALETTE.get(name, name or "transparent")
+
+
+def stroke_colour(name):
+    """Resolve an `icon_tint`: an ink name, a wash name, or a #hex."""
+    if not name:
+        return None
+    return INKS.get(name) or PALETTE.get(name) or name
+
+
+# ------------------------------------------------------------------- theming
+#
+# A board is cream with six pastel washes unless the spec says otherwise. A
+# `theme` block overrides that, so a board can carry someone's brand colours or
+# go dark. Everything below is a module global that the drawing code reads at
+# call time, which is what makes an override this small possible.
+
+THEME_KEYS = {
+    "background": "BACKGROUND", "panel": "PANEL_BG", "frame": "FRAME",
+    "ink": "INK", "muted": "MUTED", "title": "TITLE_C", "full": "FULL_C",
+    "zone": "ZONE", "hair": "HAIR", "card": "CARD", "accent": "ACCENT",
+}
+
+_DEFAULTS = {name: globals()[name] for name in THEME_KEYS.values()}
+_DEFAULT_PALETTE = dict(PALETTE)
+_DEFAULT_INKS = dict(INKS)
+
+
+def reset_theme():
+    """Back to the shipped cream palette. Called before every build so one
+    themed spec cannot leak its colours into the next board in the process —
+    which is exactly what preview_panels.py does, many times over."""
+    globals().update(_DEFAULTS)
+    PALETTE.clear()
+    PALETTE.update(_DEFAULT_PALETTE)
+    INKS.clear()
+    INKS.update(_DEFAULT_INKS)
+
+
+def theme_snapshot():
+    """Everything apply_theme touches, so a caller can put it all back.
+
+    build() rewrites eleven globals plus both colour maps. Anything that calls
+    build() as a probe and expects to carry on afterwards has to restore all of
+    that, not only the element counter — the probes happened to be safe because
+    they copied the spec's theme through unchanged, which is a property of how
+    they build their argument, not a guarantee.
+    """
+    return ({name: globals()[name] for name in _DEFAULTS},
+            dict(PALETTE), dict(INKS))
+
+
+def theme_restore(snapshot):
+    globals().update(snapshot[0])
+    PALETTE.clear()
+    PALETTE.update(snapshot[1])
+    INKS.clear()
+    INKS.update(snapshot[2])
+
+
+def apply_theme(theme):
+    reset_theme()
+    if not theme:
+        return
+    for key, target in THEME_KEYS.items():
+        if key in theme:
+            globals()[target] = theme[key]
+    # Merge, never replace. The primitives ask for washes by name — doc() wants
+    # "lilac", clipboard() wants "mint" — so a palette that dropped a key would
+    # take the shapes down with it.
+    PALETTE.update(theme.get("palette", {}))
+    INKS.update(theme.get("inks", {}))
+
+
+# ------------------------------------------------------------------ contrast
+
+def _rgb(h):
+    h = str(h).lstrip("#")
+    if len(h) in (3, 4):
+        h = "".join(c * 2 for c in h)
+    return tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))
+
+
+def _alpha(h):
+    """0..1 opacity from #rgba or #rrggbbaa; 1 when none is given."""
+    h = str(h).lstrip("#")
+    if len(h) == 4:
+        return int(h[3] * 2, 16) / 255
+    if len(h) == 8:
+        return int(h[6:], 16) / 255
+    return 1.0
+
+
+def _lum(h):
+    def f(c):
+        c /= 255
+        return c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4
+    r, g, b = _rgb(h)
+    return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b)
+
+
+def contrast(a, b):
+    """WCAG contrast ratio, or None if either colour is not a hex.
+
+    Here to catch the wash you cannot see. "lemon" (#fff3bf) was in the palette
+    until someone measured it against the panel — 1.10 by this function, against
+    1.14 for the palest wash still shipping — and realised it drew nothing.
+    """
+    try:
+        la, lb = _lum(a), _lum(b)
+        alpha = _alpha(a)
+    except (ValueError, IndexError, TypeError):
+        return None
+    # A transparent colour is invisible whatever its hue. Reading only the RGB
+    # bytes scored "#00000000" at 21:1 and passed a board whose every letter was
+    # fully see-through. Composite the foreground over the ground first.
+    la = la * alpha + lb * (1 - alpha)
+    hi, lo = max(la, lb), min(la, lb)
+    return (hi + 0.05) / (lo + 0.05)
 
 
 # ---------------------------------------------------------------- primitives
@@ -200,6 +335,12 @@ SHAPES = {"doc": doc, "padlock": padlock, "tag": tag, "clipboard": clipboard,
 BOUNDS = [None]
 MARGIN = 46
 
+# Floors for the flow layout's auto-fit. Below these the arrows have nowhere to
+# put their labels, so a diagram that still does not fit is genuinely too big
+# for its panel rather than merely badly spaced.
+MIN_GAP_X = 40
+MIN_GAP_Y = 30
+
 
 def clamp(cx, width):
     if not BOUNDS[0]:
@@ -208,10 +349,14 @@ def clamp(cx, width):
     return min(max(cx, x + MARGIN + width / 2), x + w - MARGIN - width / 2)
 
 
-def label(b, s, cx, y, size=22, color=INK):
+def label(b, s, cx, y, size=22, color=None):
+    # Resolved at call time, never as a default argument. A default binds once
+    # at import, so a theme that rebinds INK would never reach the callers that
+    # omit the colour — and the contrast check, which reads the themed INK,
+    # would score the colour that was never drawn.
     w, h = measure(s, size)
     cx = clamp(cx, w)
-    b.add(txt(uid("t"), cx - w / 2, y, s, size, color))
+    b.add(txt(uid("t"), cx - w / 2, y, s, size, color or INK))
     return w, h
 
 
@@ -282,6 +427,7 @@ def draw_item(b, item, cx, top, w, label_size=21, note_width=None):
         src = LIBS.get(item["icon"][0], item["icon"][0])
         entry = lib.find_item(src, item["icon"][1])
         els, _ = lib.stamp(entry, cx - w / 2, top, target_w=w, uid=uid("lib"),
+                           tint=stroke_colour(item.get("icon_tint")),
                            drop_text=item["icon"][0] in STRIP_TEXT)
         b.add(*els)
 
@@ -406,9 +552,26 @@ def grid(b, x, y, w, h, panel):
     # Rows are measured from real content, notes included. A fixed allowance
     # meant a six-line note had the next row drawn straight over it.
     note_w = col_w * 0.86
-    row_h = [max(item_height(it, iw, note_w)
-                 for it in items[r * cols:(r + 1) * cols])
-             for r in range(nrows)]
+    rows = [items[r * cols:(r + 1) * cols] for r in range(nrows)]
+
+    def shelf(row, size):
+        """(icon band, text band) for one row.
+
+        The icons in a row are rarely the same height — the network set's
+        firewall is nearly three times its client — so the row is measured as
+        the tallest ICON plus the tallest run of text beneath one. Measuring
+        the tallest icon-plus-text instead under-reserves whenever the tall
+        icon is not also the one with the long note.
+        """
+        band = max(item_size(it, size)[1] for it in row)
+        text = max(item_height(it, size, note_w) - item_size(it, size)[1]
+                   for it in row)
+        return band, text
+
+    def heights(size):
+        return [sum(shelf(row, size)) for row in rows]
+
+    row_h = heights(iw)
     spacing = 54
     total = sum(row_h) + spacing * (nrows - 1)
 
@@ -423,25 +586,33 @@ def grid(b, x, y, w, h, panel):
         k = max(0.55, avail / total)
         iw *= k
         note_w = col_w * 0.86
-        row_h = [max(item_height(it, iw, note_w)
-                     for it in items[r * cols:(r + 1) * cols])
-                 for r in range(nrows)]
+        row_h = heights(iw)
         total = sum(row_h) + spacing * (nrows - 1)
 
     top0 = y + max(MARGIN + 40, (h - 120 - total) / 2)
 
     pos = []
-    for i, it in enumerate(items):
-        c, r = i % cols, i // cols
-        cx = x + MARGIN + col_w * (c + 0.5)
+    for r, row in enumerate(rows):
         top = top0 + sum(row_h[:r]) + spacing * r
-        draw_item(b, it, cx, top, iw, note_width=note_w)
-        pos.append((cx, top, item_size(it, iw)[1]))
+        band = shelf(row, iw)[0]
+        for c, it in enumerate(row):
+            cx = x + MARGIN + col_w * (c + 0.5)
+            # Every icon in the row stands on one baseline, so the labels
+            # beneath them line up. Hanging them all from a common TOP instead
+            # left a short icon's label floating halfway up its neighbour.
+            ih = item_size(it, iw)[1]
+            draw_item(b, it, cx, top + band - ih, iw, note_width=note_w)
+            pos.append((cx, top, band, ih))
     for i in range(len(pos) - 1):
-        (ax, ay, ah), (bx, by, _) = pos[i], pos[i + 1],
+        (ax, ay, band, ah), (bx, by, _, bh) = pos[i], pos[i + 1]
         if abs(ay - by) < 1:
-            b.add(arrow(uid("k"), ax + iw * .9, ay + ah / 2,
-                        (bx - iw * .9) - (ax + iw * .9), 0, color="#c9bfae"))
+            # Halfway up the SHORTER of the two icons. Both stand on the same
+            # baseline, so that height is inside them both — where a row holds a
+            # firewall three times the height of a hub, taking the row's midline
+            # instead left the connector floating in the space above the hub.
+            mid = ay + band - min(ah, bh) / 2
+            b.add(arrow(uid("k"), ax + iw * .9, mid,
+                        (bx - iw * .9) - (ax + iw * .9), 0, color=HAIR))
 
 
 def pair(b, x, y, w, h, panel):
@@ -459,9 +630,9 @@ def pair(b, x, y, w, h, panel):
     stop = panel.get("blocked", False)
     end = rx - rw / 2 - (60 if stop else 20)
     b.add(arrow(uid("a"), lx + lw / 2 + 30, mid, end - (lx + lw / 2 + 30), 0,
-                color="#862e9c"))
+                color=ACCENT))
     if stop:
-        b.add(line(uid("bar"), end + 16, mid - 32, 0, 64, "#862e9c"))
+        b.add(line(uid("bar"), end + 16, mid - 32, 0, 64, ACCENT))
 
 
 def stack(b, x, y, w, h, panel):
@@ -469,7 +640,7 @@ def stack(b, x, y, w, h, panel):
     rows = panel["rows"]
     cw, chh = w * .48, h * .42
     rx, ry = x + w * .28, y + 170
-    b.add(rect(uid("card"), rx, ry, cw, chh, stroke=INK, bg="#ffffff"))
+    b.add(rect(uid("card"), rx, ry, cw, chh, stroke=INK, bg=CARD))
     for i, r in enumerate(rows):
         by = ry + i * (chh / len(rows))
         b.add(rect(uid("row"), rx + 14, by + 16, cw - 28, chh / len(rows) - 30,
@@ -509,7 +680,7 @@ def layers(b, x, y, w, h, panel):
     for i, band in enumerate(bands):
         top = top0 + i * band_h
         b.add(rect(uid("band"), x + pad, top, w - 2 * pad, band_h - 14,
-                   stroke="#cfc4b2", bg=colour(band.get("wash", "none")),
+                   stroke=ZONE, bg=colour(band.get("wash", "none")),
                    radius=True))
         lw, lh = measure(band["label"], 21)
         nh = measure(band["note"], 15)[1] if band.get("note") else 0
@@ -569,6 +740,7 @@ def layers(b, x, y, w, h, panel):
                 raise SystemExit(f"icon not found: {it['icon']}")
             els, _ = lib.stamp(entry, cx - icon_w_i / 2, itop,
                                target_w=icon_w_i, uid=uid("lib"),
+                               tint=stroke_colour(it.get("icon_tint")),
                                drop_text=it["icon"][0] in STRIP_TEXT)
             b.add(*els)
             label(b, it["label"], cx, label_y, 15)
@@ -587,6 +759,12 @@ def layers(b, x, y, w, h, panel):
         sw, sh = measure(panel["side"], 17)
         b.add(txt(uid("t"), x + w - pad - sw - 10, top0 - 34, panel["side"],
                   17, MUTED))
+
+
+def word_floor(band, size=20, pad=24):
+    """Narrowest a column can be and still hold its longest unbreakable word."""
+    return max((measure(word, size)[0] for n in band
+                for word in str(n.get("label", "")).split()), default=60) + pad
 
 
 def flow(b, x, y, w, h, panel):
@@ -620,13 +798,45 @@ def flow(b, x, y, w, h, panel):
 
     # Column widths come from the widest label in each column, so a long name
     # widens only its own column instead of stretching the whole diagram.
-    col_w = []
+    col_w, col_floor = [], []
     for c in range(cols):
         band = [n for n in nodes if n.get("col", 0) == c]
         widest = max((measure(n["label"], 20)[0] for n in band), default=120)
-        col_w.append(max(150, min(widest + 48, (w - 2 * MARGIN) / cols - gap_x)))
+        # A column can never go below its longest single WORD. Wrapping breaks
+        # a label at spaces, so "Completion" is indivisible — squeeze the column
+        # under it and the word simply hangs out of both sides of its own box.
+        col_floor.append(word_floor(band))
+        # The floor applies from the start, not only when something has to
+        # shrink. Dividing the panel evenly can already leave a column narrower
+        # than its longest word, and a label wider than its own box spills over
+        # the outline on both sides — inside the panel, so neither the bounds
+        # check nor the collision check can see it.
+        col_w.append(max(150, col_floor[-1],
+                         min(widest + 48, (w - 2 * MARGIN) / cols - gap_x)))
 
+    # Auto-fit the width. A five-step process — enquiry, call, proposal,
+    # deposit, kickoff — is the commonest thing anyone draws, and five columns
+    # do not fit the default panel. Before this it ran off the frame and failed
+    # the bounds check, which tells you a box is outside its panel but not that
+    # the panel was too narrow for the diagram.
+    #
+    # Gaps close first, then everything scales together — but never below the
+    # per-column floor, because a column narrower than its longest word puts
+    # that word outside its own box. The arrow labels are re-wrapped afterwards
+    # to whatever gap is left, so closing the gaps cannot strand them.
+    avail_w = w - 2 * MARGIN
     total_w = sum(col_w) + gap_x * (cols - 1)
+    if total_w > avail_w and cols > 1 and gap_x > MIN_GAP_X:
+        give = min(total_w - avail_w, (gap_x - MIN_GAP_X) * (cols - 1))
+        gap_x -= give / (cols - 1)
+        total_w = sum(col_w) + gap_x * (cols - 1)
+    # Nothing else can give: the columns are already at their word floors and
+    # the gaps at MIN_GAP_X. A further proportional scale was tried here and
+    # moved a single column by five pixels in a diagram that was overflowing
+    # either way, so it was removed rather than shipped untested. When it still
+    # does not fit, build() reports the width that would.
+
+
     extra = max((measure(n.get("note", ""), 16)[1] for n in nodes
                  if n.get("note")), default=0)
     tallest = max((measure(wrap_text(n["label"], 20,
@@ -634,6 +844,12 @@ def flow(b, x, y, w, h, panel):
                   for n in nodes)
     node_h = max(node_h, tallest)
     total_h = rows * (node_h + extra) + gap_y * (rows - 1)
+    avail_h = h - 120 - 2 * MARGIN
+    if total_h > avail_h and rows > 1 and gap_y > MIN_GAP_Y:
+        give = min(total_h - avail_h, (gap_y - MIN_GAP_Y) * (rows - 1))
+        gap_y -= give / (rows - 1)
+        total_h = rows * (node_h + extra) + gap_y * (rows - 1)
+
     x0 = x + (w - total_w) / 2
     y0 = y + (h - 120 - total_h) / 2
 
@@ -654,9 +870,15 @@ def flow(b, x, y, w, h, panel):
         e["textAlign"] = "center"
         b.add(e)
         if n.get("note"):
-            nt = wrap_text(n["note"], 16, bw + 40)
+            # Wrapped a little wider than the box, then clamped to the panel:
+            # a note under the first or last column is centred on a box that is
+            # already against the margin, so without the clamp it hangs outside
+            # the frame. Every other layout clamps its lettering; this one did
+            # not, and a note is the most likely thing to be long.
+            nt = wrap_text(n["note"], 16, min(bw + 40, avail_w))
             nw, nh = measure(nt, 16)
-            e = txt(uid("t"), nx + (bw - nw) / 2, ny + bh + 6, nt, 16, MUTED)
+            e = txt(uid("t"), clamp(nx + bw / 2, nw) - nw / 2, ny + bh + 6,
+                    nt, 16, MUTED)
             e["textAlign"] = "center"
             b.add(e)
         box[n["id"]] = (nx, ny, bw, bh)
@@ -683,11 +905,16 @@ def flow(b, x, y, w, h, panel):
         b.add(arrow(uid("a"), sx, sy, ex - sx, ey - sy, color=INK,
                     curved=False))
         if lab:
-            lab = edge_txt.get(id(edge), lab)
-            lw, lh = measure(lab, 16)
             dx, dy = ex - sx, ey - sy
             n = (dx * dx + dy * dy) ** 0.5 or 1
             px, py = -dy / n, dx / n
+            # Wrap to the room this particular edge has. A straight edge lives
+            # in the gap between two columns, so it wraps to the gap; a diagonal
+            # one crosses open space and wrapping it to the gap only made it
+            # four lines tall for no reason.
+            straight = abs(dy) < 4 or abs(dx) < 4
+            lab = wrap_text(lab, 16, max(70, gap_x - 16) if straight else EDGE_W)
+            lw, lh = measure(lab, 16)
             # Clear the boxes, not just the arrow. A label wider than the gap
             # between two nodes lands on a node's own label otherwise.
             if abs(dy) < 4:                      # horizontal edge
@@ -729,7 +956,7 @@ def poster(b, x, y, w, h, panel):
     for z in zones:
         zx, zy = X(z["x"]), Y(z["y"])
         zw, zh = z["w"] * w, z["h"] * h
-        b.add(rect(uid("z"), zx, zy, zw, zh, stroke="#cfc4b2",
+        b.add(rect(uid("z"), zx, zy, zw, zh, stroke=ZONE,
                    bg=colour(z.get("wash", "none")), radius=True))
         lw, lh = measure(z["label"], 20)
         b.add(txt(uid("t"), zx + 20, zy + 14, z["label"], 20, INK))
@@ -754,6 +981,7 @@ def poster(b, x, y, w, h, panel):
                 raise SystemExit(f"poster: icon not found {it['icon']}")
             els, _ = lib.stamp(entry, cx - size / 2, top, target_w=size,
                                uid=uid("lib"),
+                               tint=stroke_colour(it.get("icon_tint")),
                                drop_text=it["icon"][0] in STRIP_TEXT)
             b.add(*els)
         bottom = top + ih
@@ -796,8 +1024,11 @@ def poster(b, x, y, w, h, panel):
         edx, edy = edge(bw2/2, bfull/2, -1)
         sx, sy = ax + sdx, ay + sdy
         ex, ey = bx + edx, by + edy
+        # A line colour, resolved the way icon_tint is — colour() only knows
+        # wash names, so an ink name such as "blue" was written into the file
+        # verbatim while the contrast check scored the hex it should have been.
         b.add(arrow(uid("a"), sx, sy, ex-sx, ey-sy,
-                    color=colour(e.get("colour", "#7d7266")),
+                    color=stroke_colour(e.get("colour")) or MUTED,
                     curved=False, strokeStyle="dashed" if e.get("dashed") else "solid"))
         if e.get("label"):
             lt = wrap_text(e["label"], 15, 190)
@@ -812,8 +1043,10 @@ def poster(b, x, y, w, h, panel):
         size = nt.get("size", 19)
         t = wrap_text(nt["text"], size, nt.get("w", 520))
         tw, th = measure(t, size)
+        # Lettering, so resolved the way every other line colour is. colour()
+        # knows only wash names, so an ink name went into the file verbatim.
         e = txt(uid("t"), clamp(X(nt["x"]), tw) - tw/2, Y(nt["y"]) - th/2, t,
-                size, colour(nt.get("colour", MUTED)))
+                size, stroke_colour(nt.get("colour")) or MUTED)
         e["textAlign"] = "center"; b.add(e)
 
 

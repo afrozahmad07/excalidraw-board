@@ -1,0 +1,64 @@
+{
+  "title": "Theme and icon tint",
+  "out": "boards/theme-demo.excalidraw",
+
+  "theme": {
+    "background": "#12161d",
+    "panel": "#1a2029",
+    "frame": "#39434f",
+    "zone": "#4a5665",
+    "ink": "#e9edf2",
+    "muted": "#9aa6b4",
+    "title": "#ffb454",
+    "full": "#e0a86a",
+    "hair": "#4a5665",
+    "card": "#232b36",
+    "accent": "#c495f0",
+    "palette": {
+      "mint": "#12453c", "lilac": "#332a55", "sky": "#123952",
+      "peach": "#4a3418", "rose": "#4d2028", "sage": "#1e4326"
+    },
+    "inks": {
+      "blue": "#66b8ff", "green": "#6ede8a",
+      "orange": "#ffb454", "violet": "#c495f0"
+    }
+  },
+
+  "panel_w": 1240,
+  "panel_h": 760,
+
+  "panels": [
+    {
+      "head": "A theme is eleven colours",
+      "layout": "flow",
+      "caption": "One \"theme\" block overrides the background, the lettering and the six washes. Nothing else in the spec changes.",
+      "nodes": [
+        {"id": "spec",  "label": "Your spec",    "col": 0, "row": 1, "wash": "sky",
+         "note": "the same one that built every other board here"},
+        {"id": "theme", "label": "theme block",  "col": 1, "row": 1, "wash": "peach",
+         "note": "background, ink, muted, title, palette"},
+        {"id": "board", "label": "Your colours", "col": 2, "row": 1, "wash": "mint",
+         "note": "checked for contrast before it is drawn"}
+      ],
+      "edges": [["spec", "theme", "merged over"], ["theme", "board"]]
+    },
+
+    {
+      "head": "Icon tint colour-codes a diagram",
+      "layout": "grid",
+      "cols": 4,
+      "item_size": 110,
+      "caption": "The community icons are grey. \"icon_tint\" recolours their lines, so role is readable before a single label is.",
+      "items": [
+        {"icon": ["net", "Client"], "label": "client", "icon_tint": "violet",
+         "note": "the machine asking"},
+        {"icon": ["net", "Switch"], "label": "switch", "icon_tint": "blue",
+         "note": "moves traffic inside one network"},
+        {"icon": ["net", "Router"], "label": "router", "icon_tint": "green",
+         "note": "moves traffic between networks"},
+        {"icon": ["net", "Hub"],    "label": "hub",    "icon_tint": "orange",
+         "note": "the old way: repeats to everyone"}
+      ]
+    }
+  ]
+}
