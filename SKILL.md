@@ -124,24 +124,39 @@ reads "Instance with CloudWatch". `STRIP_TEXT` in `scene.py` lists libraries
 whose text is dropped at stamp time so the spec's label is the only one. Check
 for this when adding a library.
 
-## Two kinds of request
+## When to ask, and when to just draw
 
-**Public topic** — "how HTTPS works", "the main AWS services", "how Tailscale
-works". Research it and draw it. You have everything you need.
+One short question is cheap. Three is an interrogation, and a diagram built on a
+wrong guess wastes more time than either. The rule: **ask at most one question,
+and only when the answer changes what you draw.** Otherwise draw the obvious
+reading and name the assumption in one line underneath.
 
-**Their own thing** — "my team", "our onboarding", "my setup". You know nothing
-about it, so **ask for the parts before drawing anything**. One short question,
-then draw:
+**Ask when:**
 
-> Who's on the team and who reports to whom?
+- **It's their own thing.** "My team", "our onboarding", "my setup" — you know
+  nothing about it. Ask for the parts. Never invent someone's business and hand
+  it back as if it were theirs; they then have to spot every wrong bit.
+- **Two readings give completely different diagrams.** "Draw authentication" —
+  the concept, OAuth specifically, or their own login flow? "Draw the pipeline" —
+  whose, and which tool?
+- **Scope is wide open.** "Draw AWS" could be four services or forty. Ask
+  whether they want the shape of it or the detail.
 
-> What are the steps, roughly in order?
+**Don't ask when:**
 
-Do not invent their team, their stack or their process and hand it over as if it
-were theirs. A made-up diagram of someone's own business is worse than no
-diagram — they have to spot every wrong bit themselves.
+- **It's a public topic.** "How HTTPS works", "how Tailscale works", "the main
+  AWS services" — research it and draw it.
+- **They already listed the parts.** "Laptop, VPS, Postgres, S3 backups" is
+  everything you need. Draw it.
+- **The question is cosmetic.** Colours, icon set, panel count — pick well and
+  let them change it. The file is editable; that is the whole point.
 
-If they already listed the parts in the request, you have what you need. Draw it.
+**When you do ask, make it one line and offer the likely answer:**
+
+> Do you want the whole platform or just the compute side? I'd default to the
+> shape of it in one board.
+
+Then draw as soon as they reply. Do not stack a second question.
 
 ## What people actually ask for
 
